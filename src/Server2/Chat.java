@@ -1,4 +1,4 @@
-package Server_;
+package Server2;
 public class Chat {
 
     public void print(){
