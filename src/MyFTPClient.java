@@ -135,35 +135,73 @@ public class MyFTPClient {
     }
 
     public static void doPut() throws IOException {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("업로드할 로컬 파일 경로: ");
+        String localPath = sc.nextLine();
+        System.out.print("서버에 저장할 파일명: ");
+        String remotePath = sc.nextLine();
+    
+        // Binary 모드로 설정
+        sendCommand("TYPE I");
+        System.out.println(reader.readLine());
+    
+        // Passive 모드 진입
         enterPassiveMode();
-        sendCommand("STOR test.txt");
-
+    
+        // 파일 전송 시작
+        sendCommand("STOR " + remotePath);
+    
         try (OutputStream dataOut = dataSocket.getOutputStream();
-             FileInputStream fileIn = new FileInputStream("test.txt")) {
+             FileInputStream fileIn = new FileInputStream(localPath)) {
             byte[] buffer = new byte[4096];
             int bytesRead;
+            long totalBytes = 0;
+            long fileSize = new File(localPath).length();
+            
             while ((bytesRead = fileIn.read(buffer)) != -1) {
                 dataOut.write(buffer, 0, bytesRead);
+                totalBytes += bytesRead;
+                int progress = (int) ((totalBytes * 100) / fileSize);
+                System.out.print("\r업로드 진행률: " + progress + "%");
             }
+            System.out.println("\n업로드 완료!");
         }
         dataSocket.close();
-        System.out.println(reader.readLine());
+        System.out.println("서버 응답: " + reader.readLine());
     }
 
     public static void doGet() throws IOException {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("다운로드할 파일명: ");
+        String remotePath = sc.nextLine();
+        System.out.print("저장할 로컬 경로: ");
+        String localPath = sc.nextLine();
+    
+        // Binary 모드로 설정
+        sendCommand("TYPE I");
+        System.out.println(reader.readLine());
+    
+        // Passive 모드 진입
         enterPassiveMode();
-        sendCommand("RETR test.txt");
-
+    
+        // 파일 전송 시작
+        sendCommand("RETR " + remotePath);
+    
         try (InputStream dataIn = dataSocket.getInputStream();
-             FileOutputStream fileOut = new FileOutputStream("downloaded_test.txt")) {
+             FileOutputStream fileOut = new FileOutputStream(localPath)) {
             byte[] buffer = new byte[4096];
             int bytesRead;
+            long totalBytes = 0;
+            
             while ((bytesRead = dataIn.read(buffer)) != -1) {
                 fileOut.write(buffer, 0, bytesRead);
+                totalBytes += bytesRead;
+                System.out.print("\r다운로드된 크기: " + totalBytes + " bytes");
             }
+            System.out.println("\n다운로드 완료!");
         }
         dataSocket.close();
-        System.out.println(reader.readLine());
+        System.out.println("서버 응답: " + reader.readLine());
     }
 
     public static void doMkdir() throws IOException {
