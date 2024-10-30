@@ -2,7 +2,7 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
-public class SimpleFtpClient {
+public class Main {
     private static final String SERVER_ADDRESS = "ftp.dlptest.com"; // FTP 서버 주소
     private static final int PORT = 21; // FTP 기본 포트
 
