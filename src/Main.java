@@ -21,12 +21,7 @@ public class Main {
             out.println("PASS rNrKYTX9g7z3RgJRmxWuGHbeu"); // 익명 사용자 비밀번호
             System.out.println(in.readLine()); // 비밀번호 명령 응답
 
-
-            out.println("PASV"); // 패시브 모드로 전환
-            StringBuilder ip = new StringBuilder();
-            int dataPort = enterPassiveMode(in,ip); // 데이터 포트 가져오기
-            String dataIP = ip.toString(); // StringBuilder를 String으로 변환
-
+            
 
             String command;
             while (true) {
@@ -50,24 +45,32 @@ public class Main {
 
                     if (command.startsWith("RETR")) {
                         
-                        
+                                //요청
+                                out.println("PASV"); // 패시브 모드로 전환
+                                StringBuilder ip = new StringBuilder();
+                                 //data 소켓용
+                                int dataPort = enterPassiveMode(in,ip); // 데이터 포트 가져오기
+                                String dataIP = ip.toString(); // StringBuilder를 String으로 변환
+
                         try (Socket dataSocket = new Socket(dataIP, dataPort)) {
                             // 이제 dataSocket을 통해 파일 전송
                             // 예를 들어, 파일 다운로드
                             // 파일 다운로드 명령
-                                //요청
-                             out.println("RETR " +fileName);
+                                // 제어 소켓 요청
+                             out.println("RETR " +"Test.txt");
+                                // 제어 소켓 응답
                              String response = in.readLine(); // 파일 다운로드 요청에 대한 응답 읽기
+                                // 출력
                              System.out.println(response); // 응답 출력 (150, 226 등)
                             
                              // 응답 코드가 150인지 확인
-                            if (response.startsWith("150")) {
-                                    downloadFile(fileName, dataIP, dataPort, dataSocket); // 데이터 소켓을 통해 파일 다운로드
+                            if (response.startsWith("150") || response.startsWith("150")) {
+                                    downloadFile(fileName, dataSocket); // 데이터 소켓을 통해 파일 다운로드
                             } 
                             else {
                                     System.out.println("파일 다운로드 요청 실패: " + response);
                             }
-                            
+                            dataSocket.close();
                             
                         }      
                         catch (IOException e) {
@@ -76,8 +79,40 @@ public class Main {
                     }
                     else if (command.startsWith("STOR")) {
                        
-                        out.println("STOR " + fileName);
-                        uploadFile(fileName, dataPort, out, scanner);
+                                //요청
+                                out.println("PASV"); // 패시브 모드로 전환
+                                StringBuilder ip = new StringBuilder();
+                                //data 소켓용
+                                int dataPort = enterPassiveMode(in,ip); // 데이터 포트 가져오기
+                                String dataIP = ip.toString(); // StringBuilder를 String으로 변환
+
+                        try (Socket dataSocket = new Socket(dataIP, dataPort)) {
+                            // 이제 dataSocket을 통해 파일 전송
+                            // 예를 들어, 파일 다운로드
+                            // 파일 다운로드 명령
+                                // 제어 소켓 요청
+                                out.println("STOR " + fileName);
+                                // 제어 소켓 응답
+                                String response = in.readLine(); // 파일 다운로드 요청에 대한 응답 읽기
+                                // 출력
+                                System.out.println(response); // 응답 출력 (150, 226 등)
+                            
+                             // 응답 코드가 150인지 확인
+                            if (response.startsWith("150")||response.startsWith("150")) {
+                                    uploadFile(fileName, dataSocket); // 데이터 소켓을 통해 파일 다운로드
+                            } 
+                            else {
+                                    System.out.println("파일 다운로드 요청 실패: " + response);
+                            }
+                            
+                            dataSocket.close();
+                            
+                        }      
+                        catch (IOException e) {
+                                    e.printStackTrace();
+                        }
+
+                       
                     }
                 } 
                 else {
@@ -93,7 +128,9 @@ public class Main {
     private static int enterPassiveMode(BufferedReader in, StringBuilder refIP) throws IOException {
         // PASV 명령 전송
         String response;
+        //응답
         response = in.readLine(); // 서버 응답을 읽어들임
+        //출력
         System.out.println(response);
         
         // 서버의 PASV 응답에서 IP와 포트 정보 추출
@@ -109,7 +146,7 @@ public class Main {
         return portHigh * 256 + portLow; // 데이터 포트 반환
     }
 
-    private static void downloadFile(String fileName, String ip,int dataPort, Socket dataSocket) {
+    private static void downloadFile(String fileName, Socket dataSocket) {
         try (
             BufferedWriter fileWriter = new BufferedWriter(new FileWriter("downloaded_" + fileName));
             BufferedReader dataIn = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()))) {
@@ -130,12 +167,12 @@ public class Main {
         }
     }
 
-    private static void uploadFile(String fileName, int dataPort, PrintWriter out, Scanner scanner) {
+    private static void uploadFile(String fileName, Socket DataSocket) {
         File file = new File(fileName);
         if (file.exists() && file.isFile()) {
-            try (Socket dataSocket = new Socket(SERVER_ADDRESS, dataPort);
+            try (
                  BufferedReader fileReader = new BufferedReader(new FileReader(file));
-                 PrintWriter dataOut = new PrintWriter(dataSocket.getOutputStream(), true)) {
+                 PrintWriter dataOut = new PrintWriter(DataSocket.getOutputStream(), true)) {
 
                 String line;
                 while ((line = fileReader.readLine()) != null) {
