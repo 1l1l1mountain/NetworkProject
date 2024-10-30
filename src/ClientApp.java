@@ -14,7 +14,5 @@ public class ClientApp {
             } catch (Exception e) {
                 e.printStackTrace();  // 예외 처리
             }
-
     }
-
 }
