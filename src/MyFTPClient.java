@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class MyFTPClient {
@@ -62,6 +63,26 @@ public class MyFTPClient {
         String passResponse = reader.readLine();
         System.out.println("Server: " + passResponse);
         return passResponse.startsWith("2");
+    }
+
+    private static String readResponse() throws IOException {
+    String response;
+    ArrayList<String> responses = new ArrayList<>();
+    
+    // 모든 응답 라인을 읽음
+    while ((response = reader.readLine()) != null) {
+        responses.add(response);
+        
+        // 응답의 첫 글자가 1-5이고 그 다음이 공백이면 마지막 라인
+        if (response.length() >= 4 && 
+            Character.isDigit(response.charAt(0)) && 
+            response.charAt(3) == ' ') {
+            break;
+        }
+    }
+    
+    // 마지막 응답 반환
+    return responses.get(responses.size() - 1);
     }
 
     public static void showMenu() {
@@ -177,31 +198,91 @@ public class MyFTPClient {
         System.out.print("저장할 로컬 경로: ");
         String localPath = sc.nextLine();
     
-        // Binary 모드로 설정
-        sendCommand("TYPE I");
-        System.out.println(reader.readLine());
-    
-        // Passive 모드 진입
-        enterPassiveMode();
-    
-        // 파일 전송 시작
-        sendCommand("RETR " + remotePath);
-    
-        try (InputStream dataIn = dataSocket.getInputStream();
-             FileOutputStream fileOut = new FileOutputStream(localPath)) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            long totalBytes = 0;
-            
-            while ((bytesRead = dataIn.read(buffer)) != -1) {
-                fileOut.write(buffer, 0, bytesRead);
-                totalBytes += bytesRead;
-                System.out.print("\r다운로드된 크기: " + totalBytes + " bytes");
+        try {
+            // 이전 명령어의 남은 응답을 모두 읽어서 버퍼 비우기
+            while (reader.ready()) {
+                reader.readLine();
             }
-            System.out.println("\n다운로드 완료!");
+    
+            // Binary 모드로 설정
+            sendCommand("TYPE I");
+            String typeResponse = readResponse();
+            System.out.println("Server: " + typeResponse);
+            if (!typeResponse.startsWith("200")) {
+                throw new IOException("Binary 모드 설정 실패: " + typeResponse);
+            }
+    
+            // Passive 모드 진입
+            sendCommand("PASV");
+            String pasvResponse = readResponse();
+            System.out.println("Entering Passive Mode: " + pasvResponse);
+    
+            if (!pasvResponse.startsWith("227")) {
+                throw new IOException("PASV 명령 실패: " + pasvResponse);
+            }
+    
+            // PASV 응답 파싱
+            try {
+                int startIndex = pasvResponse.indexOf('(');
+                int endIndex = pasvResponse.indexOf(')');
+                if (startIndex == -1 || endIndex == -1) {
+                    throw new IOException("PASV 응답 형식 오류: " + pasvResponse);
+                }
+    
+                String[] numbers = pasvResponse.substring(startIndex + 1, endIndex).split(",");
+                if (numbers.length != 6) {
+                    throw new IOException("PASV 응답의 숫자 개수가 잘못됨: " + pasvResponse);
+                }
+    
+                String ip = numbers[0].trim() + "." + 
+                           numbers[1].trim() + "." + 
+                           numbers[2].trim() + "." + 
+                           numbers[3].trim();
+                int port = (Integer.parseInt(numbers[4].trim()) * 256) + 
+                           Integer.parseInt(numbers[5].trim());
+    
+                System.out.println("데이터 연결: " + ip + ":" + port);
+                dataSocket = new Socket(ip, port);
+            } catch (Exception e) {
+                throw new IOException("PASV 모드 설정 실패: " + e.getMessage());
+            }
+    
+            // 파일 전송 시작
+            sendCommand("RETR " + remotePath);
+            String retrResponse = readResponse();
+            System.out.println("Server: " + retrResponse);
+            
+            if (!retrResponse.startsWith("150")) {
+                throw new IOException("파일 다운로드 시작 실패: " + retrResponse);
+            }
+    
+            // 파일 다운로드
+            try (InputStream dataIn = dataSocket.getInputStream();
+                 FileOutputStream fileOut = new FileOutputStream(localPath)) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                long totalBytes = 0;
+                
+                while ((bytesRead = dataIn.read(buffer)) != -1) {
+                    fileOut.write(buffer, 0, bytesRead);
+                    totalBytes += bytesRead;
+                    System.out.print("\r다운로드된 크기: " + totalBytes + " bytes");
+                }
+                System.out.println("\n다운로드 완료!");
+            } finally {
+                if (dataSocket != null && !dataSocket.isClosed()) {
+                    dataSocket.close();
+                }
+            }
+            
+            // 완료 응답 읽기
+            String completionResponse = readResponse();
+            System.out.println("Server: " + completionResponse);
+            
+        } catch (IOException e) {
+            System.out.println("\n다운로드 중 오류 발생: " + e.getMessage());
+            throw e;
         }
-        dataSocket.close();
-        System.out.println("서버 응답: " + reader.readLine());
     }
 
     public static void doMkdir() throws IOException {
@@ -238,11 +319,39 @@ public class MyFTPClient {
         sendCommand("PASV");
         String response = reader.readLine();
         System.out.println("Entering Passive Mode: " + response);
-
-        String[] parts = response.split(",");
-        String ip = String.join(".", parts[0].split("\\(")[1], parts[1], parts[2], parts[3]);
-        int port = Integer.parseInt(parts[4]) * 256 + Integer.parseInt(parts[5].split("\\)")[0]);
-
-        dataSocket = new Socket(ip, port);
+    
+        // PASV 응답이 올바른지 확인
+        if (!response.startsWith("227")) {
+            throw new IOException("PASV 명령 실패: " + response);
+        }
+    
+        try {
+            // 괄호 안의 숫자들을 추출
+            int startIndex = response.indexOf('(');
+            int endIndex = response.indexOf(')');
+            if (startIndex == -1 || endIndex == -1) {
+                throw new IOException("PASV 응답 형식 오류: " + response);
+            }
+    
+            String[] numbers = response.substring(startIndex + 1, endIndex).split(",");
+            if (numbers.length != 6) {
+                throw new IOException("PASV 응답의 숫자 개수가 잘못됨: " + response);
+            }
+    
+            // IP 주소와 포트 계산
+            String ip = numbers[0].trim() + "." + 
+                       numbers[1].trim() + "." + 
+                       numbers[2].trim() + "." + 
+                       numbers[3].trim();
+            int port = (Integer.parseInt(numbers[4].trim()) * 256) + 
+                       Integer.parseInt(numbers[5].trim());
+    
+            System.out.println("데이터 연결: " + ip + ":" + port);
+            dataSocket = new Socket(ip, port);
+        } catch (Exception e) {
+            System.out.println("PASV 모드 진입 중 오류: " + e.getMessage());
+            System.out.println("서버 응답: " + response);
+            throw new IOException("PASV 모드 설정 실패", e);
+        }
     }
 }
