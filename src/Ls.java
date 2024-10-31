@@ -7,7 +7,7 @@ public class Ls {
 
     public void Do() throws IOException {
         
-        String[] connectionInfo = Main.enterPassiveMode();
+        String[] connectionInfo = PASV.DoPassiveMode();
 
         try (Socket dataSocket = new Socket(connectionInfo[0], Integer.parseInt(connectionInfo[1]))) {
             NetStream.SendCommand("LIST");

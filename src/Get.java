@@ -22,7 +22,7 @@ public class Get {
             }
     
             // Passive 모드 진입
-            String[] connectionInfo = Main.enterPassiveMode();
+            String[] connectionInfo = PASV.DoPassiveMode();
             
             try (Socket dataSocket = new Socket(connectionInfo[0], Integer.parseInt(connectionInfo[1]))) {
                 // 파일 전송 시작
