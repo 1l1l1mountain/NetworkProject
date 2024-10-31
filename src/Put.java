@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -40,6 +41,12 @@ public class Put {
                     System.out.print("\r업로드 진행률: " + progress + "%");
                 }
                 System.out.println("\n업로드 완료!");
+            }
+            catch (FileNotFoundException e) {
+                    System.err.println("파일을 찾을 수 없습니다: " + e.getMessage());
+            }                 
+            catch (IOException e) {
+                    System.err.println("파일 읽기/쓰기 중 오류가 발생했습니다: " + e.getMessage());
             }
             
             // 전송 완료 응답 읽기
