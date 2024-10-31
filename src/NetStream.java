@@ -16,7 +16,6 @@ public class NetStream {
     public static BufferedReader reader;
     public static BufferedWriter writer;
     public static Socket controlSocket;
-    public static Socket dataSocket;
     
     //입출력 담당
     public static Scanner sc = new Scanner(System.in);

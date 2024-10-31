@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
-   
+    
+
     public static void main(String[] args) {
         try {
             mainProc();
@@ -14,11 +15,10 @@ public class Main {
     }
 
     public static void mainProc() throws IOException {
-       
-        // 리팩토링
+        
+        // 서버 주소 입력 리팩토링
         NetStream stream = new NetStream();
         stream.Init();
-
 
         // Read initial connection response
         String connectResponse = NetStream.reader.readLine();
@@ -60,28 +60,28 @@ public class Main {
     }
 
     private static String readResponse() throws IOException {
-    String response;
-    ArrayList<String> responses = new ArrayList<>();
-    
-    // 모든 응답 라인을 읽음
-    while ((response = NetStream.reader.readLine()) != null) {
-        responses.add(response);
+        String response;
+        ArrayList<String> responses = new ArrayList<>();
         
-        // 응답의 첫 글자가 1-5이고 그 다음이 공백이면 마지막 라인
-        if (response.length() >= 4 && 
-            Character.isDigit(response.charAt(0)) && 
-            response.charAt(3) == ' ') {
-            break;
+        // 모든 응답 라인을 읽음
+        while ((response = NetStream.reader.readLine()) != null) {
+            responses.add(response);
+            
+            // 응답의 첫 글자가 1-5이고 그 다음이 공백이면 마지막 라인
+            if (response.length() >= 4 && 
+                Character.isDigit(response.charAt(0)) && 
+                response.charAt(3) == ' ') {
+                break;
+            }
         }
-    }
-    
-    // 마지막 응답 반환
-    return responses.get(responses.size() - 1);
+        
+        // 마지막 응답 반환
+        return responses.get(responses.size() - 1);
     }
 
     public static void showMenu() {
-        System.out.println("명령어에 해당하는 번호 입력>");
         System.out.print("  1 ls\n  2 cd\n  3 put\n  4 get\n  5 mkdir\n  6 rmdir\n  7 delete\n  8 quit\n");
+        System.out.print("명령어에 해당하는 번호 입력>");
     }
 
     public static boolean exeCommand(String command) throws IOException {
@@ -128,17 +128,26 @@ public class Main {
     }
 
     public static void doLs() throws IOException {
-        enterPassiveMode();
-        sendCommand("LIST");
+        String[] connectionInfo = enterPassiveMode();
 
-        try (BufferedReader dataReader = new BufferedReader(new InputStreamReader(NetStream.dataSocket.getInputStream()))) {
-            String line;
-            while ((line = dataReader.readLine()) != null) {
-                System.out.println(line);
+        try (Socket dataSocket = new Socket(connectionInfo[0], Integer.parseInt(connectionInfo[1]))) {
+            sendCommand("LIST");
+            String response = readResponse();
+            if (!response.startsWith("150")) {
+                throw new IOException("LIST 명령 실패: " + response);
             }
+            
+            try (BufferedReader dataReader = new BufferedReader(
+                    new InputStreamReader(dataSocket.getInputStream()))) {
+                String line;
+                while ((line = dataReader.readLine()) != null) {
+                    System.out.println(line);
+                }
+            }
+            
+            // 전송 완료 응답 읽기
+            System.out.println(readResponse());
         }
-        NetStream.dataSocket.close();
-        System.out.println(NetStream.reader.readLine());
     }
 
     public static void doCd() throws IOException {
@@ -146,7 +155,7 @@ public class Main {
         System.out.print("어디로 이동하시겠습니까? ");
         String path = sc.nextLine();
         sendCommand("CWD " + path);
-        System.out.println(NetStream.reader.readLine());
+        System.out.println(readResponse());
     }
 
     public static void doPut() throws IOException {
@@ -158,31 +167,38 @@ public class Main {
     
         // Binary 모드로 설정
         sendCommand("TYPE I");
-        System.out.println(NetStream.reader.readLine());
+        System.out.println(readResponse());
     
         // Passive 모드 진입
-        enterPassiveMode();
-    
-        // 파일 전송 시작
-        sendCommand("STOR " + remotePath);
-    
-        try (OutputStream dataOut = NetStream.dataSocket.getOutputStream();
-             FileInputStream fileIn = new FileInputStream(localPath)) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            long totalBytes = 0;
-            long fileSize = new File(localPath).length();
-            
-            while ((bytesRead = fileIn.read(buffer)) != -1) {
-                dataOut.write(buffer, 0, bytesRead);
-                totalBytes += bytesRead;
-                int progress = (int) ((totalBytes * 100) / fileSize);
-                System.out.print("\r업로드 진행률: " + progress + "%");
+        String[] connectionInfo = enterPassiveMode();
+        
+        try (Socket dataSocket = new Socket(connectionInfo[0], Integer.parseInt(connectionInfo[1]))) {
+            // 파일 전송 시작
+            sendCommand("STOR " + remotePath);
+            String response = readResponse();
+            if (!response.startsWith("150")) {
+                throw new IOException("STOR 명령 실패: " + response);
             }
-            System.out.println("\n업로드 완료!");
+            
+            try (OutputStream dataOut = dataSocket.getOutputStream();
+                 FileInputStream fileIn = new FileInputStream(localPath)) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                long totalBytes = 0;
+                long fileSize = new File(localPath).length();
+                
+                while ((bytesRead = fileIn.read(buffer)) != -1) {
+                    dataOut.write(buffer, 0, bytesRead);
+                    totalBytes += bytesRead;
+                    int progress = (int) ((totalBytes * 100) / fileSize);
+                    System.out.print("\r업로드 진행률: " + progress + "%");
+                }
+                System.out.println("\n업로드 완료!");
+            }
+            
+            // 전송 완료 응답 읽기
+            System.out.println("서버 응답: " + readResponse());
         }
-        NetStream.dataSocket.close();
-        System.out.println("서버 응답: " + NetStream.reader.readLine());
     }
 
     public static void doGet() throws IOException {
@@ -193,11 +209,6 @@ public class Main {
         String localPath = sc.nextLine();
     
         try {
-            // 이전 명령어의 남은 응답을 모두 읽어서 버퍼 비우기
-            while (NetStream.reader.ready()) {
-                NetStream.reader.readLine();
-            }
-    
             // Binary 모드로 설정
             sendCommand("TYPE I");
             String typeResponse = readResponse();
@@ -207,71 +218,37 @@ public class Main {
             }
     
             // Passive 모드 진입
-            sendCommand("PASV");
-            String pasvResponse = readResponse();
-            System.out.println("Entering Passive Mode: " + pasvResponse);
-    
-            if (!pasvResponse.startsWith("227")) {
-                throw new IOException("PASV 명령 실패: " + pasvResponse);
-            }
-    
-            // PASV 응답 파싱
-            try {
-                int startIndex = pasvResponse.indexOf('(');
-                int endIndex = pasvResponse.indexOf(')');
-                if (startIndex == -1 || endIndex == -1) {
-                    throw new IOException("PASV 응답 형식 오류: " + pasvResponse);
-                }
-    
-                String[] numbers = pasvResponse.substring(startIndex + 1, endIndex).split(",");
-                if (numbers.length != 6) {
-                    throw new IOException("PASV 응답의 숫자 개수가 잘못됨: " + pasvResponse);
-                }
-    
-                String ip = numbers[0].trim() + "." + 
-                           numbers[1].trim() + "." + 
-                           numbers[2].trim() + "." + 
-                           numbers[3].trim();
-                int port = (Integer.parseInt(numbers[4].trim()) * 256) + 
-                           Integer.parseInt(numbers[5].trim());
-    
-                System.out.println("데이터 연결: " + ip + ":" + port);
-                NetStream.dataSocket = new Socket(ip, port);
-            } catch (Exception e) {
-                throw new IOException("PASV 모드 설정 실패: " + e.getMessage());
-            }
-    
-            // 파일 전송 시작
-            sendCommand("RETR " + remotePath);
-            String retrResponse = readResponse();
-            System.out.println("Server: " + retrResponse);
+            String[] connectionInfo = enterPassiveMode();
             
-            if (!retrResponse.startsWith("150")) {
-                throw new IOException("파일 다운로드 시작 실패: " + retrResponse);
-            }
-    
-            // 파일 다운로드
-            try (InputStream dataIn = NetStream.dataSocket.getInputStream();
-                 FileOutputStream fileOut = new FileOutputStream(localPath)) {
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-                long totalBytes = 0;
+            try (Socket dataSocket = new Socket(connectionInfo[0], Integer.parseInt(connectionInfo[1]))) {
+                // 파일 전송 시작
+                sendCommand("RETR " + remotePath);
+                String retrResponse = readResponse();
+                System.out.println("Server: " + retrResponse);
                 
-                while ((bytesRead = dataIn.read(buffer)) != -1) {
-                    fileOut.write(buffer, 0, bytesRead);
-                    totalBytes += bytesRead;
-                    System.out.print("\r다운로드된 크기: " + totalBytes + " bytes");
+                if (!retrResponse.startsWith("150")) {
+                    throw new IOException("파일 다운로드 시작 실패: " + retrResponse);
                 }
-                System.out.println("\n다운로드 완료!");
-            } finally {
-                if (NetStream.dataSocket != null && !NetStream.dataSocket.isClosed()) {
-                    NetStream.dataSocket.close();
+    
+                // 파일 다운로드
+                try (InputStream dataIn = dataSocket.getInputStream();
+                     FileOutputStream fileOut = new FileOutputStream(localPath)) {
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    long totalBytes = 0;
+                    
+                    while ((bytesRead = dataIn.read(buffer)) != -1) {
+                        fileOut.write(buffer, 0, bytesRead);
+                        totalBytes += bytesRead;
+                        System.out.print("\r다운로드된 크기: " + totalBytes + " bytes");
+                    }
+                    System.out.println("\n다운로드 완료!");
                 }
+                
+                // 완료 응답 읽기
+                String completionResponse = readResponse();
+                System.out.println("Server: " + completionResponse);
             }
-            
-            // 완료 응답 읽기
-            String completionResponse = readResponse();
-            System.out.println("Server: " + completionResponse);
             
         } catch (IOException e) {
             System.out.println("\n다운로드 중 오류 발생: " + e.getMessage());
@@ -284,7 +261,7 @@ public class Main {
         System.out.print("생성할 디렉토리 이름 입력: ");
         String dirName = sc.nextLine();
         sendCommand("MKD " + dirName);
-        System.out.println(NetStream.reader.readLine());
+        System.out.println(readResponse());
     }
 
     public static void doRmdir() throws IOException {
@@ -292,7 +269,7 @@ public class Main {
         System.out.print("삭제할 디렉토리 이름 입력: ");
         String dirName = sc.nextLine();
         sendCommand("RMD " + dirName);
-        System.out.println(NetStream.reader.readLine());
+        System.out.println(readResponse());
     }
 
     public static void doDelete() throws IOException {
@@ -300,16 +277,17 @@ public class Main {
         System.out.print("삭제할 파일 이름 입력: ");
         String fileName = sc.nextLine();
         sendCommand("DELE " + fileName);
-        System.out.println(NetStream.reader.readLine());
+        System.out.println(readResponse());
     }
 
     public static void doQuit() throws IOException {
         sendCommand("QUIT");
+        System.out.println(readResponse());
         NetStream.controlSocket.close();
         System.out.println("Disconnected.");
     }
 
-    private static void enterPassiveMode() throws IOException {
+    private static String[] enterPassiveMode() throws IOException {
         sendCommand("PASV");
         String response = NetStream.reader.readLine();
         System.out.println("Entering Passive Mode: " + response);
@@ -340,8 +318,7 @@ public class Main {
             int port = (Integer.parseInt(numbers[4].trim()) * 256) + 
                        Integer.parseInt(numbers[5].trim());
     
-            System.out.println("데이터 연결: " + ip + ":" + port);
-            NetStream.dataSocket = new Socket(ip, port);
+            return new String[]{ip, String.valueOf(port)};
         } catch (Exception e) {
             System.out.println("PASV 모드 진입 중 오류: " + e.getMessage());
             System.out.println("서버 응답: " + response);
