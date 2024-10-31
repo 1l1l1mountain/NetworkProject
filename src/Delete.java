@@ -6,10 +6,9 @@ public class Delete {
     private Scanner scanner;
 
 
-    public void DO() throws IOException {
-      Scanner sc = new Scanner(System.in);
+    public void Do() throws IOException {
       System.out.print("삭제할 파일 이름 입력: ");
-      String fileName = sc.nextLine();
+      String fileName = NetStream.sc.nextLine();
       NetStream.SendCommand("DELE " + fileName);
       System.out.println(NetStream.ReceiveResponse());
     }

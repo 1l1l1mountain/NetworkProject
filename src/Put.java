@@ -3,15 +3,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class Put {
     public void Do() throws IOException {
-        Scanner sc = new Scanner(System.in);
         System.out.print("업로드할 로컬 파일 경로: ");
-        String localPath = sc.nextLine();
+        String localPath = NetStream.sc.nextLine();
         System.out.print("서버에 저장할 파일명: ");
-        String remotePath = sc.nextLine();
+        String remotePath = NetStream.sc.nextLine();
     
         // Binary 모드로 설정
         NetStream.SendCommand("TYPE I");

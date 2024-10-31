@@ -27,7 +27,7 @@ public class NetStream {
     public void Init() throws IOException{
      
             print(Print.ServerInput);
-            String server = sc.next();
+            String server = sc.nextLine();
             controlSocket = new Socket(server, 21);
 
             reader = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));

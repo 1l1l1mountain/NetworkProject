@@ -3,6 +3,7 @@ import java.io.IOException;
 
 public class Command {
     public static boolean LoopCommand(String command) throws IOException{
+        
         Delete delete = new Delete();
         Mkdir mkdir = new Mkdir();
         Rmdir rmdir = new Rmdir();
@@ -30,7 +31,7 @@ public class Command {
                 rmdir.Do();
                 break;
             case "7":
-                delete.DO();
+                delete.Do();
                 break;
             case "8":
                 return false; // Exit loop
