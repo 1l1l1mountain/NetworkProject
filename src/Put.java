@@ -56,5 +56,12 @@ public class Put {
             // 전송 완료 응답 읽기 (전송 완료 메세지)
             System.out.println("서버 응답: " + NetStream.ReceiveResponse());
         }
+        catch (FileNotFoundException e) {
+            System.out.println("\n다운로드 중 오류 발생: " + e.getMessage());
+            throw e; // 필요시 예외 재발생
+        } catch (IOException e) {
+            System.out.println("\n다운로드 중 오류 발생: " + e.getMessage());
+            throw e; // 필요시 예외 재발생
+        }
     }
 }

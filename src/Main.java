@@ -13,7 +13,6 @@ public class Main {
 
     public static void mainProc() throws IOException {
         
-        // 소켓 연결
         // 서버 주소 입력 리팩토링
         NetStream stream = new NetStream();
         stream.Init();
@@ -40,21 +39,15 @@ public class Main {
             isLoop = Command.LoopCommand(NetStream.sc.nextLine());
         }
 
-        
         // 종료 응답
         doQuit();
-        //연결 닫기
-        NetStream.sc.close();
-        NetStream.controlSocket.close();
-        System.out.println("Disconnected.");
-    
     }
   
     public static void doQuit() throws IOException {
-        // QUIT 요청
         NetStream.SendCommand("QUIT");
-        // 서버 응답 및 출력
         System.out.println(NetStream.ReceiveResponse());
+        NetStream.controlSocket.close();
+        System.out.println("Disconnected.");
     }
 
     
