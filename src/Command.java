@@ -4,19 +4,16 @@ import java.io.IOException;
 public class Command {
     public static boolean LoopCommand(String command) throws IOException{
         
-        Delete delete = new Delete();
-        Mkdir mkdir = new Mkdir();
-        Rmdir rmdir = new Rmdir();
         Ls ls = new Ls();
-        Cd cd = new Cd();
         Put put = new Put();
         Get get = new Get();
+        Otherfunc other = new Otherfunc();
         switch (command) {
             case "1":
                 ls.Do();
                 break;
-            case "2":
-                cd.Do();
+            case "2"://
+                other.Cd();
                 break;
             case "3":
                 put.Do();
@@ -24,14 +21,14 @@ public class Command {
             case "4":
                 get.Do();
                 break;
-            case "5":
-                mkdir.Do();
+            case "5"://
+                other.Mkdir();
                 break;
-            case "6":
-                rmdir.Do();
+            case "6"://
+                other.Rmdir();
                 break;
-            case "7":
-                delete.Do();
+            case "7"://
+                other.Delete();
                 break;
             case "8":
                 return false; // Exit loop
