@@ -3,12 +3,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class MyFTPClient {
-    private static Socket controlSocket;
-    private static BufferedReader reader;
-    private static BufferedWriter writer;
-    private static Socket dataSocket;
-
+public class Main {
+   
     public static void main(String[] args) {
         try {
             mainProc();
@@ -18,20 +14,18 @@ public class MyFTPClient {
     }
 
     public static void mainProc() throws IOException {
-        Scanner sc = new Scanner(System.in);
-        System.out.print("FTP 서버 주소 입력: ");
-        String server = sc.next();
-        controlSocket = new Socket(server, 21);
+       
+        // 리팩토링
+        NetStream stream = new NetStream();
+        stream.Init();
 
-        reader = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
-        writer = new BufferedWriter(new OutputStreamWriter(controlSocket.getOutputStream()));
 
         // Read initial connection response
-        String connectResponse = reader.readLine();
+        String connectResponse = NetStream.reader.readLine();
         System.out.println("Server: " + connectResponse);
 
         // Login
-        if (!doLogin(sc)) {
+        if (!doLogin(NetStream.sc)) {
             System.out.println("로그인 실패");
             return;
         }
@@ -39,7 +33,7 @@ public class MyFTPClient {
         boolean command = true;
         while (command) {
             showMenu();
-            command = exeCommand(sc.next());
+            command = exeCommand(NetStream.sc.next());
         }
         doQuit();
     }
@@ -52,7 +46,7 @@ public class MyFTPClient {
 
         // Send username
         sendCommand("USER " + user);
-        String userResponse = reader.readLine();
+        String userResponse = NetStream.reader.readLine();
         System.out.println("Server: " + userResponse);
         if (!userResponse.startsWith("3") && !userResponse.startsWith("2")) {
             return false;
@@ -60,7 +54,7 @@ public class MyFTPClient {
 
         // Send password
         sendCommand("PASS " + pass);
-        String passResponse = reader.readLine();
+        String passResponse = NetStream.reader.readLine();
         System.out.println("Server: " + passResponse);
         return passResponse.startsWith("2");
     }
@@ -70,7 +64,7 @@ public class MyFTPClient {
     ArrayList<String> responses = new ArrayList<>();
     
     // 모든 응답 라인을 읽음
-    while ((response = reader.readLine()) != null) {
+    while ((response = NetStream.reader.readLine()) != null) {
         responses.add(response);
         
         // 응답의 첫 글자가 1-5이고 그 다음이 공백이면 마지막 라인
@@ -122,13 +116,13 @@ public class MyFTPClient {
     }
 
     private static void sendCommand(String command) throws IOException {
-        writer.write(command + "\r\n");
-        writer.flush();
+        NetStream.writer.write(command + "\r\n");
+        NetStream.writer.flush();
         System.out.println("Command: " + command);
     }
 
     private static boolean isPositiveResponse() throws IOException {
-        String response = reader.readLine();
+        String response = NetStream.reader.readLine();
         System.out.println("Response: " + response);
         return response.startsWith("2");
     }
@@ -137,14 +131,14 @@ public class MyFTPClient {
         enterPassiveMode();
         sendCommand("LIST");
 
-        try (BufferedReader dataReader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()))) {
+        try (BufferedReader dataReader = new BufferedReader(new InputStreamReader(NetStream.dataSocket.getInputStream()))) {
             String line;
             while ((line = dataReader.readLine()) != null) {
                 System.out.println(line);
             }
         }
-        dataSocket.close();
-        System.out.println(reader.readLine());
+        NetStream.dataSocket.close();
+        System.out.println(NetStream.reader.readLine());
     }
 
     public static void doCd() throws IOException {
@@ -152,7 +146,7 @@ public class MyFTPClient {
         System.out.print("어디로 이동하시겠습니까? ");
         String path = sc.nextLine();
         sendCommand("CWD " + path);
-        System.out.println(reader.readLine());
+        System.out.println(NetStream.reader.readLine());
     }
 
     public static void doPut() throws IOException {
@@ -164,7 +158,7 @@ public class MyFTPClient {
     
         // Binary 모드로 설정
         sendCommand("TYPE I");
-        System.out.println(reader.readLine());
+        System.out.println(NetStream.reader.readLine());
     
         // Passive 모드 진입
         enterPassiveMode();
@@ -172,7 +166,7 @@ public class MyFTPClient {
         // 파일 전송 시작
         sendCommand("STOR " + remotePath);
     
-        try (OutputStream dataOut = dataSocket.getOutputStream();
+        try (OutputStream dataOut = NetStream.dataSocket.getOutputStream();
              FileInputStream fileIn = new FileInputStream(localPath)) {
             byte[] buffer = new byte[4096];
             int bytesRead;
@@ -187,8 +181,8 @@ public class MyFTPClient {
             }
             System.out.println("\n업로드 완료!");
         }
-        dataSocket.close();
-        System.out.println("서버 응답: " + reader.readLine());
+        NetStream.dataSocket.close();
+        System.out.println("서버 응답: " + NetStream.reader.readLine());
     }
 
     public static void doGet() throws IOException {
@@ -200,8 +194,8 @@ public class MyFTPClient {
     
         try {
             // 이전 명령어의 남은 응답을 모두 읽어서 버퍼 비우기
-            while (reader.ready()) {
-                reader.readLine();
+            while (NetStream.reader.ready()) {
+                NetStream.reader.readLine();
             }
     
             // Binary 모드로 설정
@@ -242,7 +236,7 @@ public class MyFTPClient {
                            Integer.parseInt(numbers[5].trim());
     
                 System.out.println("데이터 연결: " + ip + ":" + port);
-                dataSocket = new Socket(ip, port);
+                NetStream.dataSocket = new Socket(ip, port);
             } catch (Exception e) {
                 throw new IOException("PASV 모드 설정 실패: " + e.getMessage());
             }
@@ -257,7 +251,7 @@ public class MyFTPClient {
             }
     
             // 파일 다운로드
-            try (InputStream dataIn = dataSocket.getInputStream();
+            try (InputStream dataIn = NetStream.dataSocket.getInputStream();
                  FileOutputStream fileOut = new FileOutputStream(localPath)) {
                 byte[] buffer = new byte[4096];
                 int bytesRead;
@@ -270,8 +264,8 @@ public class MyFTPClient {
                 }
                 System.out.println("\n다운로드 완료!");
             } finally {
-                if (dataSocket != null && !dataSocket.isClosed()) {
-                    dataSocket.close();
+                if (NetStream.dataSocket != null && !NetStream.dataSocket.isClosed()) {
+                    NetStream.dataSocket.close();
                 }
             }
             
@@ -290,7 +284,7 @@ public class MyFTPClient {
         System.out.print("생성할 디렉토리 이름 입력: ");
         String dirName = sc.nextLine();
         sendCommand("MKD " + dirName);
-        System.out.println(reader.readLine());
+        System.out.println(NetStream.reader.readLine());
     }
 
     public static void doRmdir() throws IOException {
@@ -298,7 +292,7 @@ public class MyFTPClient {
         System.out.print("삭제할 디렉토리 이름 입력: ");
         String dirName = sc.nextLine();
         sendCommand("RMD " + dirName);
-        System.out.println(reader.readLine());
+        System.out.println(NetStream.reader.readLine());
     }
 
     public static void doDelete() throws IOException {
@@ -306,18 +300,18 @@ public class MyFTPClient {
         System.out.print("삭제할 파일 이름 입력: ");
         String fileName = sc.nextLine();
         sendCommand("DELE " + fileName);
-        System.out.println(reader.readLine());
+        System.out.println(NetStream.reader.readLine());
     }
 
     public static void doQuit() throws IOException {
         sendCommand("QUIT");
-        controlSocket.close();
+        NetStream.controlSocket.close();
         System.out.println("Disconnected.");
     }
 
     private static void enterPassiveMode() throws IOException {
         sendCommand("PASV");
-        String response = reader.readLine();
+        String response = NetStream.reader.readLine();
         System.out.println("Entering Passive Mode: " + response);
     
         // PASV 응답이 올바른지 확인
@@ -347,7 +341,7 @@ public class MyFTPClient {
                        Integer.parseInt(numbers[5].trim());
     
             System.out.println("데이터 연결: " + ip + ":" + port);
-            dataSocket = new Socket(ip, port);
+            NetStream.dataSocket = new Socket(ip, port);
         } catch (Exception e) {
             System.out.println("PASV 모드 진입 중 오류: " + e.getMessage());
             System.out.println("서버 응답: " + response);
