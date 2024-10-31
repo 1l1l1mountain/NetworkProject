@@ -1,6 +1,5 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -111,7 +110,7 @@ public class Main {
 
         try (Socket dataSocket = new Socket(connectionInfo[0], Integer.parseInt(connectionInfo[1]))) {
             NetStream.SendCommand("LIST");
-            String response = readResponse();
+            String response = NetStream.ReceiveResponse();
             if (!response.startsWith("150")) {
                 throw new IOException("LIST 명령 실패: " + response);
             }
@@ -125,7 +124,7 @@ public class Main {
             }
             
             // 전송 완료 응답 읽기
-            System.out.println(readResponse());
+            System.out.println(NetStream.ReceiveResponse());
         }
     }
 
@@ -134,7 +133,7 @@ public class Main {
         System.out.print("어디로 이동하시겠습니까? ");
         String path = sc.nextLine();
         NetStream.SendCommand("CWD " + path);
-        System.out.println(readResponse());
+        System.out.println(NetStream.ReceiveResponse());
     }
 
     public static void doPut() throws IOException {
@@ -146,7 +145,7 @@ public class Main {
     
         // Binary 모드로 설정
         NetStream.SendCommand("TYPE I");
-        System.out.println(readResponse());
+        System.out.println(NetStream.ReceiveResponse());
     
         // Passive 모드 진입
         String[] connectionInfo = enterPassiveMode();
@@ -154,7 +153,7 @@ public class Main {
         try (Socket dataSocket = new Socket(connectionInfo[0], Integer.parseInt(connectionInfo[1]))) {
             // 파일 전송 시작
             NetStream.SendCommand("STOR " + remotePath);
-            String response = readResponse();
+            String response = NetStream.ReceiveResponse();
             if (!response.startsWith("150")) {
                 throw new IOException("STOR 명령 실패: " + response);
             }
@@ -176,7 +175,7 @@ public class Main {
             }
             
             // 전송 완료 응답 읽기
-            System.out.println("서버 응답: " + readResponse());
+            System.out.println("서버 응답: " + NetStream.ReceiveResponse());
         }
     }
 
@@ -190,7 +189,7 @@ public class Main {
         try {
             // Binary 모드로 설정
             NetStream.SendCommand("TYPE I");
-            String typeResponse = readResponse();
+            String typeResponse = NetStream.ReceiveResponse();
             System.out.println("Server: " + typeResponse);
             if (!typeResponse.startsWith("200")) {
                 throw new IOException("Binary 모드 설정 실패: " + typeResponse);
@@ -202,7 +201,7 @@ public class Main {
             try (Socket dataSocket = new Socket(connectionInfo[0], Integer.parseInt(connectionInfo[1]))) {
                 // 파일 전송 시작
                 NetStream.SendCommand("RETR " + remotePath);
-                String retrResponse = readResponse();
+                String retrResponse = NetStream.ReceiveResponse();
                 System.out.println("Server: " + retrResponse);
                 
                 if (!retrResponse.startsWith("150")) {
@@ -225,7 +224,7 @@ public class Main {
                 }
                 
                 // 완료 응답 읽기
-                String completionResponse = readResponse();
+                String completionResponse = NetStream.ReceiveResponse();
                 System.out.println("Server: " + completionResponse);
             }
             
@@ -235,7 +234,7 @@ public class Main {
         }
     }
 
-    public static void doMkdir() throws IOException {
+    /*public static void doMkdir() throws IOException {
         Scanner sc = new Scanner(System.in);
         System.out.print("생성할 디렉토리 이름 입력: ");
         String dirName = sc.nextLine();
@@ -257,11 +256,11 @@ public class Main {
         String fileName = sc.nextLine();
         NetStream.SendCommand("DELE " + fileName);
         System.out.println(readResponse());
-    }
+    }*/
 
     public static void doQuit() throws IOException {
         NetStream.SendCommand("QUIT");
-        System.out.println(readResponse());
+        System.out.println(NetStream.ReceiveResponse());
         NetStream.controlSocket.close();
         System.out.println("Disconnected.");
     }

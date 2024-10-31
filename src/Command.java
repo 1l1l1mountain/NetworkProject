@@ -3,6 +3,9 @@ import java.io.IOException;
 
 public class Command {
     public static boolean LoopCommand(String command) throws IOException{
+        Delete delete = new Delete();
+        Mkdir mkdir = new Mkdir();
+        Rmdir rmdir = new Rmdir();
         switch (command) {
             case "1":
                 Main.doLs();
@@ -17,13 +20,13 @@ public class Command {
                 Main.doGet();
                 break;
             case "5":
-                Main.doMkdir();
+                mkdir.Do();
                 break;
             case "6":
-                Main.doRmdir();
+                rmdir.Do();
                 break;
             case "7":
-                Main.doDelete();
+                delete.DO();
                 break;
             case "8":
                 return false; // Exit loop
