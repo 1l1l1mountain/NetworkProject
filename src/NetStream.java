@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class NetStream {
@@ -39,6 +40,27 @@ public class NetStream {
         writer.write(command + "\r\n");
         writer.flush();
         print(Print.InputCommand);
+
+    }
+    // 응답 받기 (여기 한줄만 받게끔해보기)
+    public static String ReceiveResponse() throws IOException{
+        String response;
+        ArrayList<String> responses = new ArrayList<>();
+       
+        // 모든 응답 라인을 읽음
+        while ((response = NetStream.reader.readLine()) != null) {
+            responses.add(response);
+            
+            // 응답의 첫 글자가 1-5이고 그 다음이 공백이면 마지막 라인
+            if (response.length() >= 4 && 
+                Character.isDigit(response.charAt(0)) && 
+                response.charAt(3) == ' ') {
+                break;
+            }
+        }
+        
+        // 마지막 응답 반환
+        return responses.get(responses.size() - 1);
 
     }
 

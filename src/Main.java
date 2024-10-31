@@ -35,37 +35,20 @@ public class Main {
         }
 
 
-        // 로그인 성공
-        boolean command = true;
-        while (command) {
+        // 커멘드 실행
+
+        boolean isLoop = true;
+        while(isLoop) {
             NetStream.print(NetStream.Print.ShowMenu);
-            command = exeCommand(NetStream.sc.next());
+            isLoop = Command.LoopCommand(NetStream.sc.next());
         }
+
+        // 종료 응답
         doQuit();
     }
 
-    /*public static boolean doLogin(Scanner sc) throws IOException {
-        System.out.print("사용자: ");
-        String user = sc.next();
-        System.out.print("암호: ");
-        String pass = sc.next();
 
-        // Send username
-        sendCommand("USER " + user);
-        String userResponse = NetStream.reader.readLine();
-        System.out.println("Server: " + userResponse);
-        if (!userResponse.startsWith("3") && !userResponse.startsWith("2")) {
-            return false;
-        }
-
-        // Send password
-        sendCommand("PASS " + pass);
-        String passResponse = NetStream.reader.readLine();
-        System.out.println("Server: " + passResponse);
-        return passResponse.startsWith("2");
-    }*/
-
-    private static String readResponse() throws IOException {
+    /*private static String readResponse() throws IOException {
         String response;
         ArrayList<String> responses = new ArrayList<>();
         
@@ -83,14 +66,10 @@ public class Main {
         
         // 마지막 응답 반환
         return responses.get(responses.size() - 1);
-    }
-
-    /*public static void showMenu() {
-        System.out.print("  1 ls\n  2 cd\n  3 put\n  4 get\n  5 mkdir\n  6 rmdir\n  7 delete\n  8 quit\n");
-        System.out.print("명령어에 해당하는 번호 입력>");
     }*/
 
-    public static boolean exeCommand(String command) throws IOException {
+    
+   /*public static boolean exeCommand(String command) throws IOException {
         switch (command) {
             case "1":
                 doLs();
@@ -119,12 +98,6 @@ public class Main {
                 System.out.println("잘못된 번호를 선택하셨습니다. 다시 골라주세요.");
         }
         return true;
-    }
-
-    /*private static void sendCommand(String command) throws IOException {
-        NetStream.writer.write(command + "\r\n");
-        NetStream.writer.flush();
-        System.out.println("Command: " + command);
     }*/
 
     private static boolean isPositiveResponse() throws IOException {
