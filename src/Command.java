@@ -6,18 +6,22 @@ public class Command {
         Delete delete = new Delete();
         Mkdir mkdir = new Mkdir();
         Rmdir rmdir = new Rmdir();
+        Ls ls = new Ls();
+        Cd cd = new Cd();
+        Put put = new Put();
+        Get get = new Get();
         switch (command) {
             case "1":
-                Main.doLs();
+                ls.Do();
                 break;
             case "2":
-                Main.doCd();
+                cd.Do();
                 break;
             case "3":
-                Main.doPut();
+                put.Do();
                 break;
             case "4":
-                Main.doGet();
+                get.Do();
                 break;
             case "5":
                 mkdir.Do();
