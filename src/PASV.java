@@ -2,7 +2,9 @@ import java.io.IOException;
 
 public class PASV {
     public static String[] DoPassiveMode() throws IOException {
+        //PASV 요청
         NetStream.SendCommand("PASV");
+        //서버 응답
         String response = NetStream.reader.readLine();
         System.out.println("Entering Passive Mode: " + response);
     
@@ -12,7 +14,7 @@ public class PASV {
         }
     
         try {
-            // 괄호 안의 숫자들을 추출
+            // 응답 내용 추출 (IP, PORT 조합)
             int startIndex = response.indexOf('(');
             int endIndex = response.indexOf(')');
             if (startIndex == -1 || endIndex == -1) {
@@ -23,8 +25,8 @@ public class PASV {
             if (numbers.length != 6) {
                 throw new IOException("PASV 응답의 숫자 개수가 잘못됨: " + response);
             }
-    
-            // IP 주소와 포트 계산
+            
+            // IP 주소와 포트 계산 후 반환
             String ip = numbers[0].trim() + "." + 
                        numbers[1].trim() + "." + 
                        numbers[2].trim() + "." + 
