@@ -20,16 +20,22 @@ public class Main {
         NetStream stream = new NetStream();
         stream.Init();
 
-        // Read initial connection response
+        // Read initial 커넥션 응답 받기
         String connectResponse = NetStream.reader.readLine();
-        System.out.println("Server: " + connectResponse);
+        // 응답 출력
+        NetStream.print(NetStream.Print.ServerReq);
+        System.out.println(connectResponse);
 
-        // Login
-        if (!doLogin(NetStream.sc)) {
-            System.out.println("로그인 실패");
+        Login login = new Login();
+
+        // 로그인 시도
+        if (!login.DoLogin(NetStream.sc)) {
+            System.out.println("--------로그인 실패--------");
             return;
         }
 
+
+        // 로그인 성공
         boolean command = true;
         while (command) {
             showMenu();
@@ -38,7 +44,7 @@ public class Main {
         doQuit();
     }
 
-    public static boolean doLogin(Scanner sc) throws IOException {
+    /*public static boolean doLogin(Scanner sc) throws IOException {
         System.out.print("사용자: ");
         String user = sc.next();
         System.out.print("암호: ");
@@ -57,7 +63,7 @@ public class Main {
         String passResponse = NetStream.reader.readLine();
         System.out.println("Server: " + passResponse);
         return passResponse.startsWith("2");
-    }
+    }*/
 
     private static String readResponse() throws IOException {
         String response;
@@ -115,11 +121,11 @@ public class Main {
         return true;
     }
 
-    private static void sendCommand(String command) throws IOException {
+    /*private static void sendCommand(String command) throws IOException {
         NetStream.writer.write(command + "\r\n");
         NetStream.writer.flush();
         System.out.println("Command: " + command);
-    }
+    }*/
 
     private static boolean isPositiveResponse() throws IOException {
         String response = NetStream.reader.readLine();
@@ -131,7 +137,7 @@ public class Main {
         String[] connectionInfo = enterPassiveMode();
 
         try (Socket dataSocket = new Socket(connectionInfo[0], Integer.parseInt(connectionInfo[1]))) {
-            sendCommand("LIST");
+            NetStream.SendCommand("LIST");
             String response = readResponse();
             if (!response.startsWith("150")) {
                 throw new IOException("LIST 명령 실패: " + response);
@@ -154,7 +160,7 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         System.out.print("어디로 이동하시겠습니까? ");
         String path = sc.nextLine();
-        sendCommand("CWD " + path);
+        NetStream.SendCommand("CWD " + path);
         System.out.println(readResponse());
     }
 
@@ -166,7 +172,7 @@ public class Main {
         String remotePath = sc.nextLine();
     
         // Binary 모드로 설정
-        sendCommand("TYPE I");
+        NetStream.SendCommand("TYPE I");
         System.out.println(readResponse());
     
         // Passive 모드 진입
@@ -174,7 +180,7 @@ public class Main {
         
         try (Socket dataSocket = new Socket(connectionInfo[0], Integer.parseInt(connectionInfo[1]))) {
             // 파일 전송 시작
-            sendCommand("STOR " + remotePath);
+            NetStream.SendCommand("STOR " + remotePath);
             String response = readResponse();
             if (!response.startsWith("150")) {
                 throw new IOException("STOR 명령 실패: " + response);
@@ -210,7 +216,7 @@ public class Main {
     
         try {
             // Binary 모드로 설정
-            sendCommand("TYPE I");
+            NetStream.SendCommand("TYPE I");
             String typeResponse = readResponse();
             System.out.println("Server: " + typeResponse);
             if (!typeResponse.startsWith("200")) {
@@ -222,7 +228,7 @@ public class Main {
             
             try (Socket dataSocket = new Socket(connectionInfo[0], Integer.parseInt(connectionInfo[1]))) {
                 // 파일 전송 시작
-                sendCommand("RETR " + remotePath);
+                NetStream.SendCommand("RETR " + remotePath);
                 String retrResponse = readResponse();
                 System.out.println("Server: " + retrResponse);
                 
@@ -260,7 +266,7 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         System.out.print("생성할 디렉토리 이름 입력: ");
         String dirName = sc.nextLine();
-        sendCommand("MKD " + dirName);
+        NetStream.SendCommand("MKD " + dirName);
         System.out.println(readResponse());
     }
 
@@ -268,7 +274,7 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         System.out.print("삭제할 디렉토리 이름 입력: ");
         String dirName = sc.nextLine();
-        sendCommand("RMD " + dirName);
+        NetStream.SendCommand("RMD " + dirName);
         System.out.println(readResponse());
     }
 
@@ -276,19 +282,19 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         System.out.print("삭제할 파일 이름 입력: ");
         String fileName = sc.nextLine();
-        sendCommand("DELE " + fileName);
+        NetStream.SendCommand("DELE " + fileName);
         System.out.println(readResponse());
     }
 
     public static void doQuit() throws IOException {
-        sendCommand("QUIT");
+        NetStream.SendCommand("QUIT");
         System.out.println(readResponse());
         NetStream.controlSocket.close();
         System.out.println("Disconnected.");
     }
 
     private static String[] enterPassiveMode() throws IOException {
-        sendCommand("PASV");
+        NetStream.SendCommand("PASV");
         String response = NetStream.reader.readLine();
         System.out.println("Entering Passive Mode: " + response);
     

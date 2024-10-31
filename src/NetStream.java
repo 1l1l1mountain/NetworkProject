@@ -1,4 +1,5 @@
 
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.util.Scanner;
 public class NetStream {
 
     public enum Print {
-        ServerInput
+        ServerInput, InputUser, InputPassword, InputCommand, ServerReq
     }
     // 소켓 및 스트림 담당
     public static BufferedReader reader;
@@ -19,9 +20,8 @@ public class NetStream {
     
     //입출력 담당
     public static Scanner sc = new Scanner(System.in);
-    
 
-    //throws IOException이 뭐지?
+    // 초기화
     public void Init() throws IOException{
      
             print(Print.ServerInput);
@@ -31,13 +31,37 @@ public class NetStream {
             reader = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
             writer = new BufferedWriter(new OutputStreamWriter(controlSocket.getOutputStream()));
 
+    }   
+
+    //  응답 보내기
+    public static void SendCommand(String command) throws IOException {
+        writer.write(command + "\r\n");
+        writer.flush();
+        print(Print.InputCommand);
+
     }
-    public void print(Print how){
+
+    public static void print(Print how){
         switch (how) {
             case ServerInput:
                 System.out.print("FTP 서버 주소 입력: ");
                 break;
-
+            case InputUser:
+                System.out.println("--------Log In--------");
+                System.out.print("User : ");
+                break;
+            case InputPassword:
+                System.out.print("Password : ");
+                break;
+            case InputCommand:
+                System.out.println("--------Command--------");
+                System.out.print("Command : ");
+                break;
+            
+            case ServerReq:
+                System.out.print("Server 응답 : ");
+                break;
+            
 
             default:
                 throw new AssertionError();
