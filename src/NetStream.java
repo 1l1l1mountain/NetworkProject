@@ -12,6 +12,7 @@ public class NetStream {
 
     public enum Print {
         ServerInput, InputUser, InputPassword, InputCommand, ServerReq
+        ,ShowMenu
     }
     // 소켓 및 스트림 담당
     public static BufferedReader reader;
@@ -61,7 +62,10 @@ public class NetStream {
             case ServerReq:
                 System.out.print("Server 응답 : ");
                 break;
-            
+            case ShowMenu:
+                System.out.print("  1 ls\n  2 cd\n  3 put\n  4 get\n  5 mkdir\n  6 rmdir\n  7 delete\n  8 quit\n");
+                System.out.print("명령어에 해당하는 번호 입력>");
+                break;
 
             default:
                 throw new AssertionError();

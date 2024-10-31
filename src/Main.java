@@ -38,7 +38,7 @@ public class Main {
         // 로그인 성공
         boolean command = true;
         while (command) {
-            showMenu();
+            NetStream.print(NetStream.Print.ShowMenu);
             command = exeCommand(NetStream.sc.next());
         }
         doQuit();
@@ -85,10 +85,10 @@ public class Main {
         return responses.get(responses.size() - 1);
     }
 
-    public static void showMenu() {
+    /*public static void showMenu() {
         System.out.print("  1 ls\n  2 cd\n  3 put\n  4 get\n  5 mkdir\n  6 rmdir\n  7 delete\n  8 quit\n");
         System.out.print("명령어에 해당하는 번호 입력>");
-    }
+    }*/
 
     public static boolean exeCommand(String command) throws IOException {
         switch (command) {
