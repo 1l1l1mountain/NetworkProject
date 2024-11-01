@@ -9,7 +9,7 @@ public class CommandUI extends JFrame {
         // 프레임 설정
         setTitle("간단한 명령어 UI");
         setSize(600, 300);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new GridBagLayout()); // GridBagLayout 사용
 
         // GridBagConstraints 설정
