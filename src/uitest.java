@@ -50,11 +50,9 @@ public class uitest extends JFrame {
                         JOptionPane.showMessageDialog(null, "ls 명령어가 실행되었습니다.");
                         break;
                     case "cd":
-                        JOptionPane.showMessageDialog(null, "cd 명령어가 실행되었습니다.");
                         other.Cd();
                         break;
                     case "put":
-
                         JOptionPane.showMessageDialog(null, "put 명령어가 실행되었습니다.");
                         break;
                     case "get":
