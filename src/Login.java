@@ -5,11 +5,11 @@ public class Login {
 
     public boolean DoLogin(Scanner sc) throws IOException{
             //NetStream stream = new NetStream();
-            NetStream.print(NetStream.Print.InputUser);
-            String user = sc.nextLine();
+            //NetStream.print(NetStream.Print.InputUser);
+            //String user = sc.nextLine();
             
-            NetStream.print(NetStream.Print.InputPassword);
-            String pass = sc.nextLine();
+            //NetStream.print(NetStream.Print.InputPassword);
+            //String pass = sc.nextLine();
 
             //sendCommand 처리후 NETSTREAM으로 이동 
 
