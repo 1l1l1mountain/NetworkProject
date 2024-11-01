@@ -63,6 +63,8 @@ public class CommandUI extends JFrame {
                         break;
                     case "rmdir":
                         JOptionPane.showMessageDialog(null, "rmdir 명령어가 실행되었습니다.");
+                        RmdirUI rmdir = new RmdirUI();
+                        rmdir.setVisible(true);
                         break;
                     case "delete":
                         JOptionPane.showMessageDialog(null, "delete 명령어가 실행되었습니다.");
