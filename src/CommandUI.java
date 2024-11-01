@@ -42,11 +42,11 @@ public class CommandUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e)  {
             try{
-                LsUI ls = new LsUI();
-                Put put = new Put();
-                Get get = new Get();
+                
+                
                 switch (command) {
                     case "ls":
+                        LsUI ls = new LsUI();
                         ls.Do();
                         break;
                     case "cd":
