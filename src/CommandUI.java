@@ -42,12 +42,11 @@ public class CommandUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e)  {
             try{
-                LsUI ls = new LsUI();
-                MkdirUI mkdir = new MkdirUI();
-                Put put = new Put();
-                Get get = new Get();
+                
+                
                 switch (command) {
                     case "ls":
+                        LsUI ls = new LsUI();
                         ls.Do();
                         break;
                     case "cd":
@@ -61,7 +60,6 @@ public class CommandUI extends JFrame {
                         break;
                     case "mkdir":
                         JOptionPane.showMessageDialog(null, "mkdir 명령어가 실행되었습니다.");
-                        mkdir.setVisible(true);
                         break;
                     case "rmdir":
                         JOptionPane.showMessageDialog(null, "rmdir 명령어가 실행되었습니다.");
@@ -70,7 +68,7 @@ public class CommandUI extends JFrame {
                         JOptionPane.showMessageDialog(null, "delete 명령어가 실행되었습니다.");
                         break;
                     case "quit":
-                        System.exit(0); // 프로그램 종료
+                        doQuit();
                         break;
                     default:
                         break;
@@ -92,4 +90,12 @@ public class CommandUI extends JFrame {
             ui.setVisible(true);
         });
     }
+    
+    public static void doQuit() throws IOException {
+        NetStream.SendCommand("QUIT");
+        NetStream.ReceiveResponse();
+        NetStream.controlSocket.close();
+        System.out.println("Disconnected.");
+    }
+
 }
