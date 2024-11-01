@@ -20,7 +20,7 @@ public class PutUI extends JFrame {
         setTitle("파일 업로드");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(400, 150);
-        setLayout(new GridLayout(3, 2)); // 3행 2열의 그리드 레이아웃
+        setLayout(new GridLayout(2, 3)); // 3행 2열의 그리드 레이아웃
 
         // 로컬 파일 경로 입력 필드
         add(new JLabel("업로드할 로컬 파일명:"));
