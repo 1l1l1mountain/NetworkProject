@@ -45,8 +45,6 @@ public class uitest extends JFrame {
             try {
                 switch (command) {
                     case "ls":
-
-                        JOptionPane.showMessageDialog(null, "ls 명령어가 실행되었습니다.");
                         break;
                     case "cd":
                         JOptionPane.showMessageDialog(null, "cd 명령어가 실행되었습니다.");
