@@ -36,7 +36,7 @@ public class MkdirUI extends JFrame {
                 String dirName = getDirectoryName();
                 try {
                     NetStream.SendCommand("MKD " + dirName);
-                    label.setText("디렉토리 생성: " + dirName); // 라벨에 메시지 표시
+                    System.out.println(NetStream.ReceiveResponse());
                     // 디렉토리 생성 후 프레임 닫기
                     dispose(); // 현재 프레임 닫기
                 } catch (IOException e1) {
@@ -51,5 +51,5 @@ public class MkdirUI extends JFrame {
     public String getDirectoryName() {
         return textField.getText(); // 텍스트 필드에서 텍스트 반환
     }
-    
+
 }
