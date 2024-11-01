@@ -74,7 +74,8 @@ public class CommandUI extends JFrame {
                         deleteUI.setVisible(true);
                         break;
                     case "quit":
-                        doQuit();   
+                        doQuit();  
+                        System.exit(0);
                         break;
                     default:
                         break;
