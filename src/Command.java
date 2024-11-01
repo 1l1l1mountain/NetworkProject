@@ -21,13 +21,13 @@ public class Command {
             case "4":
                 get.Do();
                 break;
-            case "5"://
+            case "5":
                 other.Mkdir();
                 break;
-            case "6"://
+            case "6":
                 other.Rmdir();
                 break;
-            case "7"://
+            case "7":
                 other.Delete();
                 break;
             case "8":
