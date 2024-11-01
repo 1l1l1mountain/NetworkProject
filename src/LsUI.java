@@ -11,7 +11,7 @@ public class LsUI extends JFrame {
     public LsUI() {
         // 프레임 설정
         setTitle("FTP 출력");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(400, 300);
         setLayout(new BorderLayout());
 
