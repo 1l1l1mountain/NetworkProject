@@ -36,7 +36,6 @@ public class DeleteButtonListener implements ActionListener {
     System.out.println(netstream.ReceiveResponse());
     }
     catch(Exception e1){
-      
     }
     
   }
