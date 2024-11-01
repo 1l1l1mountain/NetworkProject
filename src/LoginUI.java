@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.Scanner;
 import javax.swing.*;
 
 public class LoginUI extends JFrame {
@@ -51,11 +53,11 @@ public class LoginUI extends JFrame {
                 String password = new String(passwordField.getPassword());
                 String website = websiteField.getText(); // 웹사이트 URL 값 가져오기
                 
-                
-
                 // 간단한 로그인 검증 로직
                 if (username.equals("dlpuser") && password.equals("rNrKYTX9g7z3RgJRmxWuGHbeu")) {
                   
+                    
+
                     //넘겨주기 위함
                     NetStream.server = website;
                     
@@ -68,7 +70,7 @@ public class LoginUI extends JFrame {
                         System.out.println(connectResponse);
                         JOptionPane.showMessageDialog(null, "서버 응답 : " + connectResponse);
                        
-
+                        DoLogin(NetStream.sc, username, password);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -94,5 +96,51 @@ public class LoginUI extends JFrame {
         SwingUtilities.invokeLater(() -> {
             this.setVisible(true);
         });
+    }
+
+
+     public boolean DoLogin(Scanner sc,String user, String pass) throws IOException{
+            //NetStream stream = new NetStream();
+            //NetStream.print(NetStream.Print.InputUser);
+            //String user = sc.nextLine();
+            
+            //NetStream.print(NetStream.Print.InputPassword);
+            //String pass = sc.nextLine();
+
+            //sendCommand 처리후 NETSTREAM으로 이동 
+
+            // 로그인 요청 보내기 (id)
+            NetStream.SendCommand("USER " + user);
+            // 로그인 응답 받기
+            String userResponse = NetStream.reader.readLine();
+            // 로그인 응답 출력
+            //NetStream.print(NetStream.Print.ServerReq);
+            //System.out.println(userResponse);
+            JOptionPane.showMessageDialog(null, "서버 응답 : " + userResponse);
+                       
+
+            if (!userResponse.startsWith("3") && !userResponse.startsWith("2")) {
+                System.out.println("User ID 가 없습니다.");
+                return false;
+            }
+    
+            // 로그인 요청 보내기 (비번)
+            NetStream.SendCommand("PASS " + pass);
+            // 로그인 응답 받기
+            String passResponse = NetStream.reader.readLine();
+            //NetStream.print(NetStream.Print.ServerReq);
+            //System.out.println(passResponse);
+            JOptionPane.showMessageDialog(null, "서버 응답 : " + passResponse);
+                       
+    
+            if (!userResponse.startsWith("3") && !userResponse.startsWith("2")) {
+                System.out.println("User 비번이 맞지 않습니다.");
+                return false;
+            }
+
+            //로그인 성공
+            return true;
+            
+
     }
 }
