@@ -9,6 +9,8 @@ public class Ls {
         //PASV 요청 및 응답
         String[] connectionInfo = PASV.DoPassiveMode();
 
+        LsUI lsUI = new LsUI();
+
         // 데이터 소켓 연결
         try (Socket dataSocket = new Socket(connectionInfo[0], Integer.parseInt(connectionInfo[1]))) {
             // LIST 요청
@@ -25,6 +27,7 @@ public class Ls {
                 while ((line = dataReader.readLine()) != null) {
                     // LIST 출력
                     System.out.println(line);
+                    lsUI.printLine(line);
                 }
             }
             
