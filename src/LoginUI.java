@@ -6,15 +6,19 @@ import javax.swing.*;
 public class LoginUI extends JFrame {
     private JTextField userField;
     private JPasswordField passwordField;
+    private JTextField websiteField; // 웹사이트 입력 필드 추가
     private JButton loginButton;
+
+    //Init사용부분
+    public static String server;
 
     public LoginUI() {
         // 창 기본 설정
         setTitle("Login");
-        setSize(300, 150);
+        setSize(300, 200); // 창 크기 조정
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(3, 2, 5, 5));
+        setLayout(new GridLayout(4, 2, 5, 5)); // 레이아웃 행 추가
 
         // 사용자명 텍스트 필드
         JLabel userLabel = new JLabel("Username:");
@@ -28,6 +32,12 @@ public class LoginUI extends JFrame {
         add(passwordLabel);
         add(passwordField);
 
+        // 웹사이트 URL 텍스트 필드
+        JLabel websiteLabel = new JLabel("Website:");
+        websiteField = new JTextField();
+        add(websiteLabel);
+        add(websiteField);
+
         // 로그인 버튼
         loginButton = new JButton("Login");
         add(new JLabel());  // 빈 레이블로 레이아웃 맞추기
@@ -39,18 +49,37 @@ public class LoginUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String username = userField.getText();
                 String password = new String(passwordField.getPassword());
+                String website = websiteField.getText(); // 웹사이트 URL 값 가져오기
                 
+                
+
                 // 간단한 로그인 검증 로직
-                if (username.equals("admin") && password.equals("password")) {
+                if (username.equals("dlpuser") && password.equals("rNrKYTX9g7z3RgJRmxWuGHbeu")) {
+                  
+                    //넘겨주기 위함
+                    NetStream.server = website;
                     
-                    //로그인 성공시 uitest 넘김
+                    try {
+                        NetStream.Init();   
+                        // Read initial 커넥션 응답 받기
+                        String connectResponse = NetStream.reader.readLine();
+                        // 응답 출력
+                        NetStream.print(NetStream.Print.ServerReq);
+                        System.out.println(connectResponse);
+                        JOptionPane.showMessageDialog(null, "서버 응답 : " + connectResponse);
+                       
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                 
+                    
+                    // 로그인 성공 시 CommandUI 창으로 넘김
                     SwingUtilities.invokeLater(() -> {
-                        uitest ui = new uitest();
+                        CommandUI ui = new CommandUI();
                         ui.setVisible(true);
                     });
-
                     
-
 
 
 
@@ -59,13 +88,11 @@ public class LoginUI extends JFrame {
                 }
             }
         });
-        
     }
 
-    public static void main(String[] args) {
+    public void Show() {
         SwingUtilities.invokeLater(() -> {
-            LoginUI frame = new LoginUI();
-            frame.setVisible(true);
+            this.setVisible(true);
         });
     }
 }

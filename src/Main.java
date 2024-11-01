@@ -13,23 +13,24 @@ public class Main {
 
     public static void mainProc() throws IOException {
         
-        // 서버 주소 입력 리팩토링
-        NetStream stream = new NetStream();
-        stream.Init();
+        //loginUI
+        LoginUI loginUI = new LoginUI();
+        loginUI.Show();
 
+        /* 
         // Read initial 커넥션 응답 받기
         String connectResponse = NetStream.reader.readLine();
         // 응답 출력
         NetStream.print(NetStream.Print.ServerReq);
-        System.out.println(connectResponse);
+        System.out.println(connectResponse);*/
 
-        Login login = new Login();
+        /*Login login = new Login();
 
         // 로그인 시도
         if (!login.DoLogin(NetStream.sc)) {
             System.out.println("--------로그인 실패--------");
             return;
-        }
+        }*/
 
 
         // 커멘드 실행
