@@ -34,14 +34,14 @@ public class Main {
 
 
         // 커멘드 실행
-        boolean isLoop = true;
+        /*boolean isLoop = true;
         while(isLoop) {
             NetStream.print(NetStream.Print.ShowMenu);
             isLoop = Command.LoopCommand(NetStream.sc.nextLine());
-        }
+        }*/
 
         // 종료 응답
-        doQuit();
+        //doQuit();
     }
   
     public static void doQuit() throws IOException {
