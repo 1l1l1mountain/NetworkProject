@@ -18,15 +18,16 @@ public class NetStream {
     public static BufferedReader reader;
     public static BufferedWriter writer;
     public static Socket controlSocket;
+    public static String server;
     
     //입출력 담당
     public static Scanner sc = new Scanner(System.in);
 
     // 초기화
-    public void Init() throws IOException{
+    public static void Init() throws IOException{
      
             print(Print.ServerInput);
-            String server = sc.nextLine();
+            //server = sc.nextLine();
             controlSocket = new Socket(server, 21);
 
             reader = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
@@ -53,8 +54,9 @@ public class NetStream {
         switch (how) {
             case ServerInput:
                 System.out.print("FTP 서버 주소 입력: ");
+                
                 break;
-            case InputUser:
+            case InputUser:    
                 System.out.println("--------Log In--------");
                 System.out.print("User : ");
                 break;
