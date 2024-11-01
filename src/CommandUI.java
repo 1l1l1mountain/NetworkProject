@@ -9,7 +9,7 @@ public class CommandUI extends JFrame {
         // 프레임 설정
         setTitle("간단한 명령어 UI");
         setSize(600, 300);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new GridBagLayout()); // GridBagLayout 사용
 
         // GridBagConstraints 설정
@@ -42,11 +42,11 @@ public class CommandUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e)  {
             try{
-                LsUI ls = new LsUI();
-                Put put = new Put();
-                Get get = new Get();
+                
+                
                 switch (command) {
                     case "ls":
+                        LsUI ls = new LsUI();
                         ls.Do();
                         break;
                     case "cd":
@@ -68,7 +68,7 @@ public class CommandUI extends JFrame {
                         JOptionPane.showMessageDialog(null, "delete 명령어가 실행되었습니다.");
                         break;
                     case "quit":
-                        System.exit(0); // 프로그램 종료
+                        doQuit();
                         break;
                     default:
                         break;
@@ -90,4 +90,12 @@ public class CommandUI extends JFrame {
             ui.setVisible(true);
         });
     }
+    
+    public static void doQuit() throws IOException {
+        NetStream.SendCommand("QUIT");
+        NetStream.ReceiveResponse();
+        NetStream.controlSocket.close();
+        System.out.println("Disconnected.");
+    }
+
 }
