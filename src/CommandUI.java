@@ -50,7 +50,8 @@ public class CommandUI extends JFrame {
                         ls.Do();
                         break;
                     case "cd":
-                        JOptionPane.showMessageDialog(null, "cd 명령어가 실행되었습니다.");
+                        CdUI cdUI = new CdUI();
+                        cdUI.setVisible(true);
                         break;
                     case "put":
                         PutUI putui = new PutUI();    

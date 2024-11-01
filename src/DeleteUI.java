@@ -30,10 +30,12 @@ public class DeleteButtonListener implements ActionListener {
   @Override
   public void actionPerformed(ActionEvent e) { 
     try{
-    NetStream netstream = new NetStream();
-    String fileName = fileNameField.getText().trim(); // 텍스트 필드에서 파일 이름 가져오기
-    netstream.SendCommand("DELE " + fileName);
-    System.out.println(netstream.ReceiveResponse());
+      NetStream netstream = new NetStream();
+      String fileName = fileNameField.getText().trim(); // 텍스트 필드에서 파일 이름 가져오기
+      netstream.SendCommand("DELE " + fileName);
+      System.out.println(netstream.ReceiveResponse());
+        
+      dispose();
     }
     catch(Exception e1){
     }
