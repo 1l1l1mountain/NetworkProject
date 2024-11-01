@@ -34,6 +34,7 @@ public class RmdirUI extends JFrame {
                 String dirName = getDirectoryName();
                 try {
                     NetStream.SendCommand("RMD " + dirName);
+                    System.out.println(NetStream.ReceiveResponse());
                     dispose(); // 현재 프레임 닫기
                 } catch (IOException e1) {
                     e1.printStackTrace();

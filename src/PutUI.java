@@ -20,7 +20,7 @@ public class PutUI extends JFrame {
         setTitle("파일 업로드");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(400, 150);
-        setLayout(new GridLayout(3, 2)); // 3행 2열의 그리드 레이아웃
+        setLayout(new GridLayout(2, 3)); // 2행 3열의 그리드 레이아웃
 
         // 로컬 파일 경로 입력 필드
         add(new JLabel("업로드할 로컬 파일명:"));
@@ -32,7 +32,9 @@ public class PutUI extends JFrame {
         fileChooserButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
+                // JFileChooser fileChooser = new JFileChooser();
+                // 현재 작업 디렉토리를 최상위 폴더로 설정
+                JFileChooser fileChooser = new JFileChooser(new File(System.getProperty("user.dir")));
                 int returnValue = fileChooser.showOpenDialog(PutUI.this);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
@@ -139,8 +141,6 @@ public class PutUI extends JFrame {
             throw e; // 필요시 예외 재발생
         }
     }
-
-    
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
