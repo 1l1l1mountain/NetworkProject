@@ -64,15 +64,16 @@ public class CommandUI extends JFrame {
                         mkdir.setVisible(true);
                         break;
                     case "rmdir":
-                        JOptionPane.showMessageDialog(null, "rmdir 명령어가 실행되었습니다.");
-                        
+                        RmdirUI rmdir = new RmdirUI();
+                        rmdir.setVisible(true);
+                    
                         break;
                     case "delete":
                         DeleteUI deleteUI = new DeleteUI();
                         deleteUI.setVisible(true);
                         break;
                     case "quit":
-                        doQuit();
+                        doQuit();   
                         break;
                     default:
                         break;
