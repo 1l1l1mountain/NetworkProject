@@ -17,11 +17,11 @@ public class uitest extends JFrame {
         gbc.insets = new Insets(10, 10, 10, 10); // 버튼 사이에 여백 설정
 
         // 버튼 생성
-        String[] buttonLabels = {"ls", "cd", "put", "get", "mkdir", "rmdir", "delete", "quit"};
+        String[] buttonLabels = { "ls", "cd", "put", "get", "mkdir", "rmdir", "delete", "quit" };
         for (int i = 0; i < buttonLabels.length; i++) {
             JButton button = new JButton(buttonLabels[i]);
             button.addActionListener(new ButtonClickListener(buttonLabels[i])); // 클릭 이벤트 핸들러 추가
-            
+
             // 위치 설정
             gbc.gridx = i % 4; // 4열로 배치
             gbc.gridy = i / 4; // 행 계산
@@ -34,7 +34,7 @@ public class uitest extends JFrame {
         private String command;
 
         public ButtonClickListener(String command) {
-            this.command = command;   
+            this.command = command;
         }
 
         @Override
@@ -45,18 +45,18 @@ public class uitest extends JFrame {
             try {
                 switch (command) {
                     case "ls":
-                        ls.Do();
+
                         JOptionPane.showMessageDialog(null, "ls 명령어가 실행되었습니다.");
                         break;
                     case "cd":
                         JOptionPane.showMessageDialog(null, "cd 명령어가 실행되었습니다.");
                         break;
                     case "put":
-                        put.Do();
+
                         JOptionPane.showMessageDialog(null, "put 명령어가 실행되었습니다.");
                         break;
                     case "get":
-                        get.Do();
+
                         JOptionPane.showMessageDialog(null, "get 명령어가 실행되었습니다.");
                         break;
                     case "mkdir":
