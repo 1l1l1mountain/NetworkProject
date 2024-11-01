@@ -8,8 +8,10 @@ public class Otherfunc {
 
     public void Cd() throws IOException{
 
-        System.out.print("어디로 이동하시겠습니까? ");
-        String path = NetStream.sc.nextLine();
+ //       System.out.print("어디로 이동하시겠습니까? ");
+ //       String path = NetStream.sc.nextLine();
+        CdUI cdUI = new CdUI();
+        String path = cdUI.getDirectory();
         NetStream.SendCommand("CWD " + path);
         System.out.println(NetStream.ReceiveResponse());
 
