@@ -34,6 +34,7 @@ public class DeleteButtonListener implements ActionListener {
     String fileName = fileNameField.getText().trim(); // 텍스트 필드에서 파일 이름 가져오기
     netstream.SendCommand("DELE " + fileName);
     System.out.println(netstream.ReceiveResponse());
+    dispose();
     }
     catch(Exception e1){
     }
