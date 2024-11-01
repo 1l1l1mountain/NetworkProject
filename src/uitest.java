@@ -34,42 +34,48 @@ public class uitest extends JFrame {
         private String command;
 
         public ButtonClickListener(String command) {
-            this.command = command;
-            
+            this.command = command;   
         }
 
         @Override
-        public void actionPerformed(ActionEvent e)  {
+        public void actionPerformed(ActionEvent e) {
             Ls ls = new Ls();
             Put put = new Put();
             Get get = new Get();
-            switch (command) {
-                case "ls":
-                    JOptionPane.showMessageDialog(null, "ls 명령어가 실행되었습니다.");
-                    break;
-                case "cd":
-                    JOptionPane.showMessageDialog(null, "cd 명령어가 실행되었습니다.");
-                    break;
-                case "put":
-                    JOptionPane.showMessageDialog(null, "put 명령어가 실행되었습니다.");
-                    break;
-                case "get":
-                    JOptionPane.showMessageDialog(null, "get 명령어가 실행되었습니다.");
-                    break;
-                case "mkdir":
-                    JOptionPane.showMessageDialog(null, "mkdir 명령어가 실행되었습니다.");
-                    break;
-                case "rmdir":
-                    JOptionPane.showMessageDialog(null, "rmdir 명령어가 실행되었습니다.");
-                    break;
-                case "delete":
-                    JOptionPane.showMessageDialog(null, "delete 명령어가 실행되었습니다.");
-                    break;
-                case "quit":
-                    System.exit(0); // 프로그램 종료
-                    break;
-                default:
-                    break;
+            try {
+                switch (command) {
+                    case "ls":
+                        ls.Do();
+                        JOptionPane.showMessageDialog(null, "ls 명령어가 실행되었습니다.");
+                        break;
+                    case "cd":
+                        JOptionPane.showMessageDialog(null, "cd 명령어가 실행되었습니다.");
+                        break;
+                    case "put":
+                        put.Do();
+                        JOptionPane.showMessageDialog(null, "put 명령어가 실행되었습니다.");
+                        break;
+                    case "get":
+                        get.Do();
+                        JOptionPane.showMessageDialog(null, "get 명령어가 실행되었습니다.");
+                        break;
+                    case "mkdir":
+                        JOptionPane.showMessageDialog(null, "mkdir 명령어가 실행되었습니다.");
+                        break;
+                    case "rmdir":
+                        JOptionPane.showMessageDialog(null, "rmdir 명령어가 실행되었습니다.");
+                        break;
+                    case "delete":
+                        JOptionPane.showMessageDialog(null, "delete 명령어가 실행되었습니다.");
+                        break;
+                    case "quit":
+                        System.exit(0); // 프로그램 종료
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e1) { // IOException 외에 다른 예외도 처리
+                JOptionPane.showMessageDialog(null, "오류 발생: " + e1.getMessage());
             }
         }
     }
