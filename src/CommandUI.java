@@ -68,7 +68,7 @@ public class CommandUI extends JFrame {
                         JOptionPane.showMessageDialog(null, "delete 명령어가 실행되었습니다.");
                         break;
                     case "quit":
-                        System.exit(0); // 프로그램 종료
+                        doQuit();
                         break;
                     default:
                         break;
@@ -90,4 +90,12 @@ public class CommandUI extends JFrame {
             ui.setVisible(true);
         });
     }
+    
+    public static void doQuit() throws IOException {
+        NetStream.SendCommand("QUIT");
+        NetStream.ReceiveResponse();
+        NetStream.controlSocket.close();
+        System.out.println("Disconnected.");
+    }
+
 }
