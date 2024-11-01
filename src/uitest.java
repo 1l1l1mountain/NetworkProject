@@ -42,6 +42,7 @@ public class uitest extends JFrame {
             Ls ls = new Ls();
             Put put = new Put();
             Get get = new Get();
+            Otherfunc other = new Otherfunc();
             try {
                 switch (command) {
                     case "ls":
@@ -50,6 +51,7 @@ public class uitest extends JFrame {
                         break;
                     case "cd":
                         JOptionPane.showMessageDialog(null, "cd 명령어가 실행되었습니다.");
+                        other.Cd();
                         break;
                     case "put":
 
