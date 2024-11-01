@@ -7,7 +7,7 @@ import java.net.Socket;
 
 public class Put {
     public void Do() throws IOException {
-        System.out.print("업로드할 로컬 파일 경로: ");
+        System.out.print("업로드할 로컬 파일명: ");
         String localPath = NetStream.sc.nextLine();
         System.out.print("서버에 저장할 파일명: ");
         String remotePath = NetStream.sc.nextLine();
