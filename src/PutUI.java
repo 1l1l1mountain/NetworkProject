@@ -10,12 +10,12 @@ import java.io.OutputStream;
 import java.net.Socket;
 import javax.swing.*;
 
-public class putUI extends JFrame {
+public class PutUI extends JFrame {
 
     private JTextField localFilePathField;   // 로컬 파일 경로 입력 필드
     private JTextField remoteFileNameField;   // 서버에 저장할 파일명 입력 필드
 
-    public putUI() {
+    public PutUI() {
         // 프레임 설정
         setTitle("파일 업로드");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -33,7 +33,7 @@ public class putUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser fileChooser = new JFileChooser();
-                int returnValue = fileChooser.showOpenDialog(putUI.this);
+                int returnValue = fileChooser.showOpenDialog(PutUI.this);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     localFilePathField.setText(selectedFile.getAbsolutePath());
@@ -62,7 +62,7 @@ public class putUI extends JFrame {
 
             // 입력 필드가 비어있는지 확인
             if (localPath.isEmpty() || remotePath.isEmpty()) {
-                JOptionPane.showMessageDialog(putUI.this, "모든 필드를 입력하세요.", "오류", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(PutUI.this, "모든 필드를 입력하세요.", "오류", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -72,7 +72,7 @@ public class putUI extends JFrame {
                 Do(remotePath, localPath);
 
             } catch (IOException ioException) {
-                JOptionPane.showMessageDialog(putUI.this, "파일 업로드 중 오류 발생: " + ioException.getMessage(), "오류", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(PutUI.this, "파일 업로드 중 오류 발생: " + ioException.getMessage(), "오류", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -144,7 +144,7 @@ public class putUI extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            putUI uploadUI = new putUI(); // putUI 클래스 인스턴스 생성
+            PutUI uploadUI = new PutUI(); // putUI 클래스 인스턴스 생성
             uploadUI.setVisible(true); // UI 표시
         });
     }

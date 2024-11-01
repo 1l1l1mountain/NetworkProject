@@ -53,21 +53,23 @@ public class CommandUI extends JFrame {
                         JOptionPane.showMessageDialog(null, "cd 명령어가 실행되었습니다.");
                         break;
                     case "put":
-                        JOptionPane.showMessageDialog(null, "put 명령어가 실행되었습니다.");
+                        PutUI putui = new PutUI();    
+                        putui.setVisible(true);
                         break;
                     case "get":
-                        JOptionPane.showMessageDialog(null, "get 명령어가 실행되었습니다.");
+                        new GetUI();
                         break;
                     case "mkdir":
-                        JOptionPane.showMessageDialog(null, "mkdir 명령어가 실행되었습니다.");
+                        MkdirUI mkdir = new MkdirUI();
+                        mkdir.setVisible(true);
                         break;
                     case "rmdir":
                         JOptionPane.showMessageDialog(null, "rmdir 명령어가 실행되었습니다.");
-                        RmdirUI rmdir = new RmdirUI();
-                        rmdir.setVisible(true);
+                        
                         break;
                     case "delete":
-                        JOptionPane.showMessageDialog(null, "delete 명령어가 실행되었습니다.");
+                        DeleteUI deleteUI = new DeleteUI();
+                        deleteUI.setVisible(true);
                         break;
                     case "quit":
                         doQuit();

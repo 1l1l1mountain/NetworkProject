@@ -17,7 +17,7 @@ public class Main {
         LoginUI loginUI = new LoginUI();
         loginUI.Show();
 
-        /* 
+        /*  
         // Read initial 커넥션 응답 받기
         String connectResponse = NetStream.reader.readLine();
         // 응답 출력
