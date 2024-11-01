@@ -43,6 +43,7 @@ public class CommandUI extends JFrame {
         public void actionPerformed(ActionEvent e)  {
             try{
                 LsUI ls = new LsUI();
+                MkdirUI mkdir = new MkdirUI();
                 Put put = new Put();
                 Get get = new Get();
                 switch (command) {
@@ -60,6 +61,7 @@ public class CommandUI extends JFrame {
                         break;
                     case "mkdir":
                         JOptionPane.showMessageDialog(null, "mkdir 명령어가 실행되었습니다.");
+                        mkdir.setVisible(true);
                         break;
                     case "rmdir":
                         JOptionPane.showMessageDialog(null, "rmdir 명령어가 실행되었습니다.");
