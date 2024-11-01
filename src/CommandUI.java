@@ -47,7 +47,6 @@ public class CommandUI extends JFrame {
                 Get get = new Get();
                 switch (command) {
                     case "ls":
-                        JOptionPane.showMessageDialog(null, "ls 명령어가 실행되었습니다.");
                         ls.Do();
                         break;
                     case "cd":
