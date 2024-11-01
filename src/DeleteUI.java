@@ -26,12 +26,19 @@ public class DeleteUI extends JFrame{
         
 
 public class DeleteButtonListener implements ActionListener {
-  NetStream netstream  = new NetStream();
+
   @Override
   public void actionPerformed(ActionEvent e) { 
+    try{
+    NetStream netstream = new NetStream();
     String fileName = fileNameField.getText().trim(); // 텍스트 필드에서 파일 이름 가져오기
     netstream.SendCommand("DELE " + fileName);
     System.out.println(netstream.ReceiveResponse());
+    }
+    catch(Exception e1){
+      
+    }
+    
   }
 }
 
