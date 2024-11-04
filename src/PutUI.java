@@ -9,7 +9,7 @@ import javax.swing.*;
 public class PutUI extends JFrame {
     private JTextArea outputArea; // 결과를 표시할 영역
 
-    public PutUI(JTextArea outputArea) {
+    public PutUI() {
     }
 
     public void Do(String remotePath, String localPath) throws IOException {
