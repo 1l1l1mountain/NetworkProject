@@ -26,8 +26,6 @@ public class NetStream {
     // 초기화
     public static void Init() throws IOException{
      
-            print(Print.ServerInput);
-            //server = sc.nextLine();
             controlSocket = new Socket(server, 21);
 
             reader = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
@@ -39,7 +37,6 @@ public class NetStream {
     public static void SendCommand(String command) throws IOException {
         writer.write(command + "\r\n");
         writer.flush();
-        print(Print.InputCommand);
 
     }
     // 응답 받기 (여기 한줄만 받게끔해보기)
@@ -50,37 +47,5 @@ public class NetStream {
         return response;
     }
 
-    public static void print(Print how){
-        switch (how) {
-            case ServerInput:
-                System.out.print("FTP 서버 주소 입력: ");
-                
-                break;
-            case InputUser:    
-                System.out.println("--------Log In--------");
-                System.out.print("User : ");
-                break;
-            case InputPassword:
-                System.out.print("Password : ");
-                break;
-            case InputCommand:
-                System.out.println("--------Command--------");
-                System.out.print("Command : ");
-                break;
-            
-            case ServerReq:
-                System.out.print("Server 응답 : ");
-                break;
-            case ShowMenu:
-                System.out.print("  1 ls\n  2 cd\n  3 put\n  4 get\n  5 mkdir\n  6 rmdir\n  7 delete\n  8 quit\n");
-                System.out.print("명령어에 해당하는 번호 입력>");
-                break;
-
-            default:
-                throw new AssertionError();
-        }
-
-        
-    }
     
 }
