@@ -6,15 +6,27 @@ import java.net.Socket;
 public class GetUI {
 
     public void Do(String remoteFileName, String localFilePath) throws IOException {
+       
+       
+       
         // 서버에 PASV 명령을 보내고 데이터 전송을 위한 서버의 IP와 포트 정보 받아옴
         String[] connectionInfo = PASV.DoPassiveMode();
 
+
+
+
         // 받은 IP와 포트를 사용하여 서버와 데이터 소켓 연결
         try (Socket dataSocket = new Socket(connectionInfo[0], Integer.parseInt(connectionInfo[1])); 
-        // 데이터 소켓으로부터 데이터를 읽기 위해 BufferedInputStream 생성
+       
+       
+        // 데이터 소켓으로부터 데이터를 읽기 위해 BufferedInputStream 생성 (중요!!!!!!!!)
         BufferedInputStream dataIn = new BufferedInputStream(dataSocket.getInputStream()); 
+
         // 로컬 파일로 데이터를 저장하기 위해 FileOutputStream 생성
         FileOutputStream fileOut = new FileOutputStream(localFilePath)) {
+
+
+
 
             // 서버에 RETR 명령을 보내 지정된 파일을 요청
             NetStream.SendCommand("RETR " + remoteFileName);
@@ -35,8 +47,14 @@ public class GetUI {
                 fileOut.write(buffer, 0, bytesRead);
             }
 
+
+
             // 데이터 전송이 완료된 후 서버의 최종 응답을 확인
             response = NetStream.ReceiveResponse();
+
+
+
+            
             if (!response.startsWith("226")) {
                 // 응답이 226으로 시작하지 않으면 파일 전송이 완전히 완료되지 않았음을 의미
                 throw new IOException("File transfer not completed successfully: " + response);

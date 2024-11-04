@@ -95,10 +95,18 @@ public class CommandUI extends JFrame {
             try {
 
 
+
+
+
                 //LS 명령 실행
                 LsUI lsUI = new LsUI(outputArea); // outputArea를 전달하여 LsUI 인스턴스 생성
                 lsUI.Do(); 
             
+
+
+
+
+                
             
             } catch (IOException ex) {
                 outputArea.append("오류 발생: " + ex.getMessage() + "\n");
@@ -114,10 +122,20 @@ public class CommandUI extends JFrame {
             if (input != null && !input.isEmpty()) {
                 outputArea.append("Changing directory to: " + input + "\n");
             
+
+
+
+
+
                 // CD 명령 실행
                 CdUI cdUI = new CdUI();
                 cdUI.Do(input);
             
+
+
+
+
+
             
             }
 
@@ -135,10 +153,19 @@ public class CommandUI extends JFrame {
                 outputArea.append("Uploading file: " + localFilePath + " to " + remoteFileName + "\n");
                 try {
 
+
+
+
+
                     //PUT 실행
                     PutUI putUI = new PutUI(); 
                     putUI.Do(remoteFileName, localFilePath); 
                     
+
+
+
+
+
 
 
 
@@ -162,9 +189,18 @@ public class CommandUI extends JFrame {
                 try {
 
 
+
+
+
+
                     //Get 실행
                     GetUI getUI = new GetUI();
                     getUI.Do(remoteFileName, localFilePath); 
+
+
+
+
+
 
 
 
@@ -183,15 +219,24 @@ public class CommandUI extends JFrame {
             String input = JOptionPane.showInputDialog("Create Directory:");
             if (input != null && !input.isEmpty()) {
                 outputArea.append("Creating directory: " + input + "\n");
-                try {
                 
+                
+
+
+
+
+
+
                     //mkdir 실행                    
                     MkdirUI mkdirUI = new MkdirUI();
                     mkdirUI.Do(input);
                 
-                } catch (IOException ex) {
-                    outputArea.append("오류 발생: " + ex.getMessage() + "\n");
-                }
+
+
+
+
+
+
             }
         }
 
@@ -204,10 +249,12 @@ public class CommandUI extends JFrame {
             //삭제할 디렉토리 입력 시 RM 실행
             if (input != null && !input.isEmpty()) {
                 outputArea.append("Removing directory: " + input + "\n");
-                try {
+
+                
 
 
-                    
+
+
                     //mkdir 실행                    
                     RmdirUI rmdirUI = new RmdirUI();
                     rmdirUI.Do(input);
@@ -217,9 +264,7 @@ public class CommandUI extends JFrame {
 
 
 
-                } catch (IOException ex) {
-                    outputArea.append("오류 발생: " + ex.getMessage() + "\n");
-                }
+
             }
         }
 
@@ -234,8 +279,11 @@ public class CommandUI extends JFrame {
             // 삭제할 파일 입력시 DELE 실행
             if (input != null && !input.isEmpty()) {
                 outputArea.append("Deleting file: " + input + "\n");
-                try {
                
+               
+
+
+
                        //mkdir 실행                    
                        DeleteUI deleteUI = new DeleteUI();
                        deleteUI.Do(input);
@@ -244,9 +292,7 @@ public class CommandUI extends JFrame {
 
 
 
-                } catch (IOException ex) {
-                    outputArea.append("오류 발생: " + ex.getMessage() + "\n");
-                }
+              
             }
         }
     }
@@ -257,6 +303,8 @@ public class CommandUI extends JFrame {
     public static void doQuit() {
         try {
             
+
+
             
             //QUIT 요청
             NetStream.SendCommand("QUIT");
@@ -267,9 +315,13 @@ public class CommandUI extends JFrame {
 
 
 
+            
+
+
+
         } 
         catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("나가는데 오류 생김.");
         }
         System.exit(0);
     }
