@@ -76,7 +76,7 @@ public class PutUI extends JFrame {
             CommandUI.outputArea.append("업로드 중 오류 발생: " + e.getMessage() + "\n");
             throw e; // 필요시 예외 재발생
         } catch (IOException e) {
-            CommandUI.outputArea.append("업로드 중 오류 발생: " + e.getMessage() + "\n");
+            CommandUI.  outputArea.append("업로드 중 오류 발생: " + e.getMessage() + "\n");
             throw e; // 필요시 예외 재발생
         }
     }

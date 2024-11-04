@@ -2,6 +2,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import javax.swing.*;
 
 public class CommandUI extends JFrame {
@@ -150,17 +153,31 @@ public class CommandUI extends JFrame {
             
             // 업로드할 파일 경로, 저장할 파일명 입력 시 Put실행
             if (localFilePath != null && !localFilePath.isEmpty() && remoteFileName != null && !remoteFileName.isEmpty()) {
-                outputArea.append("Uploading file: " + localFilePath + " to " + remoteFileName + "\n");
-                try {
+               try {
 
 
 
+                    // 파일 경로가 유효한지 확인하는 코드
+                    Path path = Paths.get(localFilePath);
+                    // 파일이 존재할 때 
+                    if (Files.exists(path) && Files.isRegularFile(path)) {
+
+                            outputArea.append("Uploading file: " + localFilePath + " to " + remoteFileName + "\n");
+                
+                            //PUT 실행
+                            PutUI putUI = new PutUI(); 
+                            putUI.Do(remoteFileName, localFilePath); 
+                            
+
+                    }
+                    else{
+                            
+                        outputArea.append("파일명을 제대로 쓰십시오.\n");
+                        return;
+                    }
+                   
 
 
-                    //PUT 실행
-                    PutUI putUI = new PutUI(); 
-                    putUI.Do(remoteFileName, localFilePath); 
-                    
 
 
 

@@ -18,7 +18,7 @@ public class Main {
     }
 
     public static void mainProc() throws IOException {
-
+        
 
 
         //로그인 UI 실행
