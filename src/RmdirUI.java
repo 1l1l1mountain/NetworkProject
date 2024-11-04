@@ -11,7 +11,7 @@ public class RmdirUI extends JFrame {
 
     public RmdirUI() {
         // 프레임 설정
-        setTitle("생성할 디렉토리 이름 입력");
+        setTitle("삭제할 디렉토리 이름 입력");
         setSize(300, 200);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new FlowLayout());
@@ -21,6 +21,8 @@ public class RmdirUI extends JFrame {
         add(textField); // 텍스트 필드를 바로 추가
 
         // 라벨 생성 및 추가 (초기값 설정)
+        label = new JLabel(""); // 라벨 초기화
+        add(label); // 라벨 추가
 
         // 버튼 생성
         applyButton = new JButton("확인");
@@ -48,5 +50,4 @@ public class RmdirUI extends JFrame {
     public String getDirectoryName() {
         return textField.getText(); // 텍스트 필드에서 텍스트 반환
     }
-    
 }

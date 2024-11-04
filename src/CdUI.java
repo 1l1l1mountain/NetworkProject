@@ -13,7 +13,6 @@ public class CdUI extends JFrame {
         setTitle("CD 명령");
         setSize(400, 200);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);  // 폼이 닫혀도 프로그램은 계속 실행
-
         setLayout(new FlowLayout());
 
         // 텍스트 필드 생성
@@ -34,13 +33,10 @@ public class CdUI extends JFrame {
                 try {
                     NetStream.SendCommand("CWD " + inputText);
                     String response = NetStream.ReceiveResponse();
-                    label.setText("서버 응답 : "+response);
-                    
-
+                    label.setText("서버 응답 : " + response);
                 } catch (Exception exx) {
-
+                    exx.printStackTrace();
                 }
-                
             }
         });
 
@@ -49,6 +45,4 @@ public class CdUI extends JFrame {
         add(applyButton);
         add(label);
     }
-
-   
 }

@@ -1,4 +1,3 @@
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,7 +10,6 @@ import java.net.Socket;
 import javax.swing.*;
 
 public class PutUI extends JFrame {
-
     private JTextField localFilePathField;   // 로컬 파일 경로 입력 필드
     private JTextField remoteFileNameField;   // 서버에 저장할 파일명 입력 필드
 
@@ -32,8 +30,6 @@ public class PutUI extends JFrame {
         fileChooserButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // JFileChooser fileChooser = new JFileChooser();
-                // 현재 작업 디렉토리를 최상위 폴더로 설정
                 JFileChooser fileChooser = new JFileChooser(new File(System.getProperty("user.dir")));
                 int returnValue = fileChooser.showOpenDialog(PutUI.this);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -56,7 +52,6 @@ public class PutUI extends JFrame {
     }
 
     private class UploadButtonListener implements ActionListener {
-
         @Override
         public void actionPerformed(ActionEvent e) {
             String localPath = localFilePathField.getText().trim();          // 로컬 파일 경로
@@ -70,38 +65,22 @@ public class PutUI extends JFrame {
 
             try {
                 // 로컬 파일과 서버 파일명 전달
-                //put.Do(localPath, remotePath);
                 Do(remotePath, localPath);
-
             } catch (IOException ioException) {
                 JOptionPane.showMessageDialog(PutUI.this, "파일 업로드 중 오류 발생: " + ioException.getMessage(), "오류", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
-    /* 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            putUI uploadUI = new putUI(); // putUI 클래스 인스턴스 생성
-            uploadUI.setVisible(true); // UI 표시
-        });
-    }
-     */
     public void Do(String remotePath, String localPath) throws IOException {
-        // System.out.print("업로드할 로컬 파일명: ");
-        // String localPath = NetStream.sc.nextLine();
-        // System.out.print("서버에 저장할 파일명: ");
-        // String remotePath = NetStream.sc.nextLine();
-
         // Binary 모드로 설정
         NetStream.SendCommand("TYPE I");
         System.out.println(NetStream.ReceiveResponse());
 
         // PASV 요청 및 응답 
-        // 데이터 소켓용 IP, PORT 반환
         String[] connectionInfo = PASV.DoPassiveMode();
 
-        //데이터 소켓 생성
+        // 데이터 소켓 생성
         try (Socket dataSocket = new Socket(connectionInfo[0], Integer.parseInt(connectionInfo[1]))) {
             // STOR 요청 (파일 전송 요청)
             NetStream.SendCommand("STOR " + remotePath);
@@ -110,6 +89,7 @@ public class PutUI extends JFrame {
             if (!response.startsWith("150")) {
                 throw new IOException("STOR 명령 실패: " + response);
             }
+
             // output stream 생성
             try (OutputStream dataOut = dataSocket.getOutputStream(); FileInputStream fileIn = new FileInputStream(localPath)) {
                 byte[] buffer = new byte[4096];

@@ -3,58 +3,49 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import javax.swing.*;
-import java.awt.*;
 
-public class LsUI extends JFrame {
+public class LsUI {
     private JTextArea outputArea;
 
-    public LsUI() {
-        // 프레임 설정
-        setTitle("FTP 출력");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(400, 300);
-        setLayout(new BorderLayout());
-
-        // 텍스트 영역 생성
-        outputArea = new JTextArea();
-        outputArea.setEditable(false); // 수정 불가
-        JScrollPane scrollPane = new JScrollPane(outputArea);
-        add(scrollPane, BorderLayout.CENTER);
-
-        setVisible(true);
-    }
-
-    public void printLine(String line) {
-        outputArea.append(line + "\n"); // 텍스트 영역에 추가
+    public LsUI(JTextArea outputArea) {
+        this.outputArea = outputArea;
     }
 
     public void Do() throws IOException {
+        outputArea.append("PASV 모드 설정 중...\n");
+
         // PASV 요청 및 응답
         String[] connectionInfo = PASV.DoPassiveMode();
+        outputArea.append("PASV 연결 정보: " + connectionInfo[0] + ":" + connectionInfo[1] + "\n");
 
         // 데이터 소켓 연결
         try (Socket dataSocket = new Socket(connectionInfo[0], Integer.parseInt(connectionInfo[1]))) {
+            outputArea.append("데이터 소켓 연결 성공\n");
+
             // LIST 요청
             NetStream.SendCommand("LIST");
-            
+            outputArea.append("LIST 명령 전송\n");
+
             // 서버 응답
             String response = NetStream.ReceiveResponse();
+            outputArea.append("서버 응답: " + response + "\n");
+
             if (!response.startsWith("150")) {
                 throw new IOException("LIST 명령 실패: " + response);
             }
-            
+
             // input stream 연결
             try (BufferedReader dataReader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()))) {
                 String line;
                 while ((line = dataReader.readLine()) != null) {
-                    // LIST 출력
-                    printLine(line);
+                    outputArea.append(line + "\n");
                 }
             }
-            
+
             // 전송 완료 응답 출력
-            outputArea.append(NetStream.ReceiveResponse() + "\n");
+            outputArea.append("전송 완료 응답: " + NetStream.ReceiveResponse() + "\n");
+        } catch (IOException e) {
+            outputArea.append("오류 발생: " + e.getMessage() + "\n");
         }
     }
-
 }

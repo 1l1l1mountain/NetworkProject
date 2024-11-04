@@ -13,7 +13,7 @@ public class MkdirUI extends JFrame {
         // 프레임 설정
         setTitle("생성할 디렉토리 이름 입력");
         setSize(300, 200);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new FlowLayout());
 
         // 텍스트 필드 생성
@@ -51,5 +51,4 @@ public class MkdirUI extends JFrame {
     public String getDirectoryName() {
         return textField.getText(); // 텍스트 필드에서 텍스트 반환
     }
-
 }
