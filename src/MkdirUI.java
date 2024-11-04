@@ -26,7 +26,7 @@ public class MkdirUI extends JFrame {
 
         // 버튼 생성
         applyButton = new JButton("확인");
-        add(applyButton); // 버튼 추가
+        add(applyButton); 
 
         // 버튼 클릭 이벤트 핸들러 추가
         applyButton.addActionListener(new ActionListener() {
@@ -34,11 +34,12 @@ public class MkdirUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // 텍스트 필드에서 텍스트를 가져와 라벨에 적용
                 String dirName = getDirectoryName();
+                //명령어 보내는 try문
                 try {
                     NetStream.SendCommand("MKD " + dirName);
                     JOptionPane.showMessageDialog(null, "서버 응답 : " + NetStream.ReceiveResponse());
                     // 디렉토리 생성 후 프레임 닫기
-                    dispose(); // 현재 프레임 닫기
+                    dispose(); 
                 } catch (IOException e1) {
                     e1.printStackTrace();
                     label.setText("디렉토리 생성 실패: " + e1.getMessage()); // 오류 메시지 표시

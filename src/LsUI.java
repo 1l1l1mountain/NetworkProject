@@ -30,6 +30,7 @@ public class LsUI {
             String response = NetStream.ReceiveResponse();
             outputArea.append("서버 응답: " + response + "\n");
 
+            //응답이 150 OK가 아니라면
             if (!response.startsWith("150")) {
                 throw new IOException("LIST 명령 실패: " + response);
             }
