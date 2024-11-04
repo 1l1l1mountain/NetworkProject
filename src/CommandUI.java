@@ -99,7 +99,7 @@ public class CommandUI extends JFrame {
 
 
                 //LS 명령 실행
-                LsUI lsUI = new LsUI(outputArea); // outputArea를 전달하여 LsUI 인스턴스 생성
+                LsUI lsUI = new LsUI(); // outputArea를 전달하여 LsUI 인스턴스 생성
                 lsUI.Do(); 
             
 

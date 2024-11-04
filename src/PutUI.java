@@ -7,8 +7,7 @@ import java.net.Socket;
 import javax.swing.*;
 
 public class PutUI extends JFrame {
-    private JTextArea outputArea; // 결과를 표시할 영역
-
+    
     public PutUI() {
     }
 
@@ -19,7 +18,7 @@ public class PutUI extends JFrame {
         // TYPE I 요청
         NetStream.SendCommand("TYPE I");
         // TYPE I 응답
-        outputArea.append(NetStream.ReceiveResponse() + "\n");
+        CommandUI.outputArea.append(NetStream.ReceiveResponse() + "\n");
 
 
 
@@ -39,7 +38,7 @@ public class PutUI extends JFrame {
            
            
             if (!response.startsWith("150")) {
-                outputArea.append("File upload initiation failed: " + response + "\n");
+                CommandUI.outputArea.append("File upload initiation failed: " + response + "\n");
                 return;
             }
 
@@ -55,29 +54,29 @@ public class PutUI extends JFrame {
                     dataOut.write(buffer, 0, bytesRead);
                     totalBytes += bytesRead;
                     int progress = (int) ((totalBytes * 100) / fileSize);
-                    outputArea.append("\r업로드 진행률: " + progress + "%");
+                    CommandUI.outputArea.append("\r업로드 진행률: " + progress + "%");
                 }
-                outputArea.append("\n업로드 완료!\n");
+                CommandUI.outputArea.append("\n업로드 완료!\n");
             } catch (FileNotFoundException e) {
-                outputArea.append("파일을 찾을 수 없습니다: " + e.getMessage() + "\n");
+                CommandUI.outputArea.append("파일을 찾을 수 없습니다: " + e.getMessage() + "\n");
             } catch (IOException e) {
-                outputArea.append("파일 읽기/쓰기 중 오류가 발생했습니다: " + e.getMessage() + "\n");
+                CommandUI.outputArea.append("파일 읽기/쓰기 중 오류가 발생했습니다: " + e.getMessage() + "\n");
             }
 
 
 
 
             // 전송 완료 응답 읽기 (전송 완료 메세지) 중요!!!!!!!!!
-            outputArea.append("서버 응답: " + NetStream.ReceiveResponse() + "\n");
+            CommandUI.outputArea.append("서버 응답: " + NetStream.ReceiveResponse() + "\n");
         
         
         
         
         } catch (FileNotFoundException e) {
-            outputArea.append("업로드 중 오류 발생: " + e.getMessage() + "\n");
+            CommandUI.outputArea.append("업로드 중 오류 발생: " + e.getMessage() + "\n");
             throw e; // 필요시 예외 재발생
         } catch (IOException e) {
-            outputArea.append("업로드 중 오류 발생: " + e.getMessage() + "\n");
+            CommandUI.outputArea.append("업로드 중 오류 발생: " + e.getMessage() + "\n");
             throw e; // 필요시 예외 재발생
         }
     }
