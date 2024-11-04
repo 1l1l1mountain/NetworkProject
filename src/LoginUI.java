@@ -1,8 +1,8 @@
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import javax.swing.*;
 
 public class LoginUI extends JFrame {
     private JTextField userField;        // 사용자명 입력 필드
@@ -56,22 +56,25 @@ public class LoginUI extends JFrame {
                 NetStream.server = website;
 
                 try {
-                    // 서버 초기 연결
+                    
+                    // 제어 소켓 연결 요청 -> 실패 시 catch로 이동
                     NetStream.Init();
+                    // 서버 응답 
                     String connectResponse = NetStream.reader.readLine();
                     JOptionPane.showMessageDialog(null, "서버 응답: " + connectResponse); // 220 응답 확인
 
                     // 로그인 처리
                     if (DoLogin(username, password)) {
-                        // 로그인 성공 시 CommandUI 창으로 이동
+                        // 로그인 성공 시 명령 UI 생성
                         CommandUI ui = new CommandUI();
                         ui.setVisible(true);
                         dispose(); // 로그인 UI 닫기
                     } else {
                         JOptionPane.showMessageDialog(null, "Login Failed. Try again.");
                     }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                } 
+                catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "제대로 된 ftp 서버 사이트를 입력하세요.");                   
                 }
             }
         });
@@ -85,8 +88,9 @@ public class LoginUI extends JFrame {
 
     // DoLogin 메서드 - USER 및 PASS 명령을 전송하여 로그인 처리
     private boolean DoLogin(String user, String pass) throws IOException {
-        // USER 명령어 전송
+        // USER 요청
         NetStream.SendCommand("USER " + user);
+        // USER 응답
         String userResponse = NetStream.reader.readLine();
         JOptionPane.showMessageDialog(null, "서버 응답: " + userResponse); // 331 응답 확인
 
@@ -96,8 +100,9 @@ public class LoginUI extends JFrame {
             return false;
         }
 
-        // PASS 명령어 전송
+        // PASS 요청
         NetStream.SendCommand("PASS " + pass);
+        // PASS 응답
         String passResponse = NetStream.reader.readLine();
         JOptionPane.showMessageDialog(null, "서버 응답: " + passResponse); // 230 응답 확인
 
