@@ -14,6 +14,10 @@ public class LoginUI extends JFrame {
     public static String server;
 
     public LoginUI() {
+
+        //-------------------------UI-------------------------
+        //-------------------------UI-------------------------
+
         // 창 기본 설정
         setTitle("Login");
         setSize(300, 200); // 창 크기 조정
@@ -44,6 +48,14 @@ public class LoginUI extends JFrame {
         add(new JLabel());  // 빈 레이블로 레이아웃 맞추기
         add(loginButton);
 
+        
+        //-------------------------UI-------------------------
+        //-------------------------UI-------------------------
+
+
+
+
+
         // 버튼 클릭 이벤트 리스너
         loginButton.addActionListener(new ActionListener() {
             @Override
@@ -52,24 +64,36 @@ public class LoginUI extends JFrame {
                 String password = new String(passwordField.getPassword());
                 String website = websiteField.getText(); // 웹사이트 URL 값 가져오기
 
+
+
                 // 서버 주소 설정
                 NetStream.server = website;
-
+                
+                
+                
                 try {
                     
                     // 제어 소켓 연결 요청 -> 실패 시 catch로 이동
                     NetStream.Init();
                     // 서버 응답 
                     String connectResponse = NetStream.reader.readLine();
-                    JOptionPane.showMessageDialog(null, "서버 응답: " + connectResponse); // 220 응답 확인
+                    // 220 응답 확인
+                    JOptionPane.showMessageDialog(null, "서버 응답: " + connectResponse); 
+
 
                     // 로그인 처리
                     if (DoLogin(username, password)) {
+                    
+                    
                         // 로그인 성공 시 명령 UI 생성
                         CommandUI ui = new CommandUI();
                         ui.setVisible(true);
+                    
+                    
+                    
                         dispose(); // 로그인 UI 닫기
-                    } else {
+                    } 
+                    else {
                         JOptionPane.showMessageDialog(null, "Login Failed. Try again.");
                     }
                 } 
@@ -80,20 +104,21 @@ public class LoginUI extends JFrame {
         });
     }
 
-    public void Show() {
-        SwingUtilities.invokeLater(() -> {
-            this.setVisible(true);
-        });
-    }
+
 
     // DoLogin 메서드 - USER 및 PASS 명령을 전송하여 로그인 처리
     private boolean DoLogin(String user, String pass) throws IOException {
+        
+        
+        
         // USER 요청
         NetStream.SendCommand("USER " + user);
         // USER 응답
         String userResponse = NetStream.reader.readLine();
-        JOptionPane.showMessageDialog(null, "서버 응답: " + userResponse); // 331 응답 확인
+        // 331 응답 확인
+        JOptionPane.showMessageDialog(null, "서버 응답: " + userResponse); 
 
+        
         // 331 응답이 아니면 실패 처리
         if (!userResponse.startsWith("331")) {
             System.out.println("User ID 응답 오류.");
@@ -104,8 +129,11 @@ public class LoginUI extends JFrame {
         NetStream.SendCommand("PASS " + pass);
         // PASS 응답
         String passResponse = NetStream.reader.readLine();
-        JOptionPane.showMessageDialog(null, "서버 응답: " + passResponse); // 230 응답 확인
-
+         // 230 응답 확인
+        JOptionPane.showMessageDialog(null, "서버 응답: " + passResponse);
+        
+        
+        
         // 230 응답이 아니면 실패 처리
         if (!passResponse.startsWith("230")) {
             System.out.println("Password 응답 오류.");
@@ -114,5 +142,12 @@ public class LoginUI extends JFrame {
 
         // 로그인 성공
         return true;
+    }
+
+
+    public void Show() {
+        SwingUtilities.invokeLater(() -> {
+            this.setVisible(true);
+        });
     }
 }

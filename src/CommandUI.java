@@ -8,6 +8,9 @@ public class CommandUI extends JFrame {
     public static JTextArea outputArea; // 명령어 결과를 표시할 영역
 
     public CommandUI() {
+
+        // ---------------------UI -------------------------
+        // ---------------------UI -------------------------
         setTitle("FTP Client");
         setSize(600, 400);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -30,6 +33,10 @@ public class CommandUI extends JFrame {
             buttonPanel.add(button);
         }
         add(buttonPanel, BorderLayout.SOUTH);
+    
+        
+        // ---------------------UI -------------------------
+        // ---------------------UI -------------------------
     }
 
     private class ButtonClickListener implements ActionListener {
@@ -79,32 +86,51 @@ public class CommandUI extends JFrame {
             }
         }
 
+
+
+
+
         private void executeLs() {
             outputArea.append("Executing ls command...\n");
-            LsUI lsUI = new LsUI(outputArea); // outputArea를 전달하여 LsUI 인스턴스 생성
             try {
+
+
                 //LS 명령 실행
+                LsUI lsUI = new LsUI(outputArea); // outputArea를 전달하여 LsUI 인스턴스 생성
                 lsUI.Do(); 
+            
+            
             } catch (IOException ex) {
                 outputArea.append("오류 발생: " + ex.getMessage() + "\n");
             }
         }
 
+
+
+
         private void executeCd() {
-            // 디렉토리 이동 로직 구현
+            // 변경디렉토리 입력시 CD 실행
             String input = JOptionPane.showInputDialog("Change Directory to:");
             if (input != null && !input.isEmpty()) {
                 outputArea.append("Changing directory to: " + input + "\n");
+            
+                // CD 명령 실행
                 CdUI cdUI = new CdUI();
                 cdUI.Do(input);
+            
+            
             }
 
         }
+
+
 
         private void executePut() {
             String localFilePath = JOptionPane.showInputDialog("업로드할 로컬 파일 경로:");
             String remoteFileName = JOptionPane.showInputDialog("서버에 저장할 파일명:");
             
+            
+            // 업로드할 파일 경로, 저장할 파일명 입력 시 Put실행
             if (localFilePath != null && !localFilePath.isEmpty() && remoteFileName != null && !remoteFileName.isEmpty()) {
                 outputArea.append("Uploading file: " + localFilePath + " to " + remoteFileName + "\n");
                 try {
@@ -113,6 +139,9 @@ public class CommandUI extends JFrame {
                     PutUI putUI = new PutUI(); 
                     putUI.Do(remoteFileName, localFilePath); 
                     
+
+
+
                     outputArea.append("Upload completed.\n");
                 } catch (IOException ex) {
                     outputArea.append("Upload failed: " + ex.getMessage() + "\n");
@@ -120,15 +149,25 @@ public class CommandUI extends JFrame {
             }
         }
         
+
+
+
         private void executeGet() {
             String remoteFileName = JOptionPane.showInputDialog("다운로드할 파일명:");
             String localFilePath = JOptionPane.showInputDialog("저장할 로컬 파일 경로:");
-        
+            
+            // 다운로드할 파일명, 저장할 로컬 파일명 입력 시 Get실행
             if (remoteFileName != null && !remoteFileName.isEmpty() && localFilePath != null && !localFilePath.isEmpty()) {
                 outputArea.append("Downloading file: " + remoteFileName + " to " + localFilePath + "\n");
                 try {
-                    GetUI getUI = new GetUI(); // GetUI 인스턴스 생성
-                    getUI.doDownload(remoteFileName, localFilePath); // doDownload 메서드 호출
+
+
+                    //Get 실행
+                    GetUI getUI = new GetUI();
+                    getUI.Do(remoteFileName, localFilePath); 
+
+
+
                     outputArea.append("Download completed.\n");
                 } catch (IOException ex) {
                     outputArea.append("Download failed: " + ex.getMessage() + "\n");
@@ -137,42 +176,74 @@ public class CommandUI extends JFrame {
         }
         
 
+
+
+
         private void executeMkdir() {
             String input = JOptionPane.showInputDialog("Create Directory:");
             if (input != null && !input.isEmpty()) {
                 outputArea.append("Creating directory: " + input + "\n");
                 try {
-                    NetStream.SendCommand("MKD " + input);
-                    String response = NetStream.ReceiveResponse();
-                    outputArea.append("서버 응답: " + response + "\n"); // 서버 응답 출력
+                
+                    //mkdir 실행                    
+                    MkdirUI mkdirUI = new MkdirUI();
+                    mkdirUI.Do(input);
+                
                 } catch (IOException ex) {
                     outputArea.append("오류 발생: " + ex.getMessage() + "\n");
                 }
             }
         }
+
+
+
 
         private void executeRmdir() {
             String input = JOptionPane.showInputDialog("Remove Directory:");
+            
+            //삭제할 디렉토리 입력 시 RM 실행
             if (input != null && !input.isEmpty()) {
                 outputArea.append("Removing directory: " + input + "\n");
                 try {
-                    NetStream.SendCommand("RMD " + input);
-                    String response = NetStream.ReceiveResponse();
-                    outputArea.append("서버 응답: " + response + "\n"); // 서버 응답 출력
+
+
+                    
+                    //mkdir 실행                    
+                    RmdirUI rmdirUI = new RmdirUI();
+                    rmdirUI.Do(input);
+                
+
+
+
+
+
                 } catch (IOException ex) {
                     outputArea.append("오류 발생: " + ex.getMessage() + "\n");
                 }
             }
         }
 
+
+
+
+
         private void executeDelete() {
             String input = JOptionPane.showInputDialog("Delete File:");
+            
+            
+            // 삭제할 파일 입력시 DELE 실행
             if (input != null && !input.isEmpty()) {
                 outputArea.append("Deleting file: " + input + "\n");
                 try {
-                    NetStream.SendCommand("DELE " + input);
-                    String response = NetStream.ReceiveResponse();
-                    outputArea.append("서버 응답: " + response + "\n"); // 서버 응답 출력
+               
+                       //mkdir 실행                    
+                       DeleteUI deleteUI = new DeleteUI();
+                       deleteUI.Do(input);
+                   
+   
+
+
+
                 } catch (IOException ex) {
                     outputArea.append("오류 발생: " + ex.getMessage() + "\n");
                 }
@@ -180,14 +251,22 @@ public class CommandUI extends JFrame {
         }
     }
 
+
+
+
     public static void doQuit() {
         try {
+            
+            
             //QUIT 요청
             NetStream.SendCommand("QUIT");
             //QUIT 응답
             NetStream.ReceiveResponse();
             //제어 소켓 닫기
             NetStream.controlSocket.close();
+
+
+
         } 
         catch (IOException e) {
             e.printStackTrace();
