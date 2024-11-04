@@ -12,8 +12,11 @@ import javax.swing.*;
 public class PutUI extends JFrame {
     private JTextField localFilePathField;   // 로컬 파일 경로 입력 필드
     private JTextField remoteFileNameField;   // 서버에 저장할 파일명 입력 필드
+    private JTextArea outputArea; // 결과를 표시할 영역
 
-    public PutUI() {
+    public PutUI(JTextArea outputArea) {
+        this.outputArea = outputArea; // 결과 출력 영역 설정
+
         // 프레임 설정
         setTitle("파일 업로드");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -63,11 +66,18 @@ public class PutUI extends JFrame {
                 return;
             }
 
+            // 로컬 파일 존재 여부 확인
+            File file = new File(localPath);
+            if (!file.exists() || !file.isFile()) {
+                outputArea.append("Error: 파일이 존재하지 않거나 유효하지 않습니다: " + localPath + "\n");
+                return; // 파일이 없으면 업로드 시도하지 않음
+            }
+
             try {
                 // 로컬 파일과 서버 파일명 전달
                 Do(remotePath, localPath);
             } catch (IOException ioException) {
-                JOptionPane.showMessageDialog(PutUI.this, "파일 업로드 중 오류 발생: " + ioException.getMessage(), "오류", JOptionPane.ERROR_MESSAGE);
+                outputArea.append("파일 업로드 중 오류 발생: " + ioException.getMessage() + "\n");
             }
         }
     }
@@ -75,7 +85,7 @@ public class PutUI extends JFrame {
     public void Do(String remotePath, String localPath) throws IOException {
         // Binary 모드로 설정
         NetStream.SendCommand("TYPE I");
-        System.out.println(NetStream.ReceiveResponse());
+        outputArea.append(NetStream.ReceiveResponse() + "\n");
 
         // PASV 요청 및 응답 
         String[] connectionInfo = PASV.DoPassiveMode();
@@ -87,7 +97,8 @@ public class PutUI extends JFrame {
             // 서버 응답 (전송 준비 완료 메세지)
             String response = NetStream.ReceiveResponse();
             if (!response.startsWith("150")) {
-                throw new IOException("STOR 명령 실패: " + response);
+                outputArea.append("File upload initiation failed: " + response + "\n");
+                return;
             }
 
             // output stream 생성
@@ -102,29 +113,30 @@ public class PutUI extends JFrame {
                     dataOut.write(buffer, 0, bytesRead);
                     totalBytes += bytesRead;
                     int progress = (int) ((totalBytes * 100) / fileSize);
-                    System.out.print("\r업로드 진행률: " + progress + "%");
+                    outputArea.append("\r업로드 진행률: " + progress + "%");
                 }
-                System.out.println("\n업로드 완료!");
+                outputArea.append("\n업로드 완료!\n");
             } catch (FileNotFoundException e) {
-                System.err.println("파일을 찾을 수 없습니다: " + e.getMessage());
+                outputArea.append("파일을 찾을 수 없습니다: " + e.getMessage() + "\n");
             } catch (IOException e) {
-                System.err.println("파일 읽기/쓰기 중 오류가 발생했습니다: " + e.getMessage());
+                outputArea.append("파일 읽기/쓰기 중 오류가 발생했습니다: " + e.getMessage() + "\n");
             }
 
             // 전송 완료 응답 읽기 (전송 완료 메세지)
-            System.out.println("서버 응답: " + NetStream.ReceiveResponse());
+            outputArea.append("서버 응답: " + NetStream.ReceiveResponse() + "\n");
         } catch (FileNotFoundException e) {
-            System.out.println("\n다운로드 중 오류 발생: " + e.getMessage());
+            outputArea.append("업로드 중 오류 발생: " + e.getMessage() + "\n");
             throw e; // 필요시 예외 재발생
         } catch (IOException e) {
-            System.out.println("\n다운로드 중 오류 발생: " + e.getMessage());
+            outputArea.append("업로드 중 오류 발생: " + e.getMessage() + "\n");
             throw e; // 필요시 예외 재발생
         }
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            PutUI uploadUI = new PutUI(); // putUI 클래스 인스턴스 생성
+            JTextArea outputArea = new JTextArea(); // 결과 출력용 텍스트 영역 생성
+            PutUI uploadUI = new PutUI(outputArea); // PutUI 클래스 인스턴스 생성
             uploadUI.setVisible(true); // UI 표시
         });
     }
