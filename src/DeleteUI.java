@@ -28,7 +28,7 @@ public class DeleteUI extends JFrame {
       try {
         String fileName = fileNameField.getText().trim(); // 텍스트 필드에서 파일 이름 가져오기
         NetStream.SendCommand("DELE " + fileName);
-        System.out.println(NetStream.ReceiveResponse());
+        JOptionPane.showMessageDialog(null, "서버 응답 : " + NetStream.ReceiveResponse());
 
         dispose();
       } catch (Exception e1) {

@@ -51,9 +51,14 @@ public class LsUI extends JFrame {
                     printLine(line);
                 }
             }
-            
+            String endResponse = NetStream.ReceiveResponse();
             // 전송 완료 응답 출력
-            outputArea.append(NetStream.ReceiveResponse() + "\n");
+            outputArea.append(endResponse + "\n");
+            JOptionPane.showMessageDialog(null, "서버 응답 : " + endResponse);
+
+        }
+        catch(Exception e){
+            System.out.println("LIST 오류");
         }
     }
 
