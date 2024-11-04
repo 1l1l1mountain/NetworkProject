@@ -35,7 +35,7 @@ public class CdUI extends JFrame {
                     NetStream.SendCommand("CWD " + inputText);
                     String response = NetStream.ReceiveResponse();
                     label.setText("서버 응답 : "+response);
-                    
+                    JOptionPane.showMessageDialog(null, "서버 응답 : " + response);
 
                 } catch (Exception exx) {
 
