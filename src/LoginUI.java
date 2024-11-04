@@ -53,12 +53,9 @@ public class LoginUI extends JFrame {
                 String password = new String(passwordField.getPassword());
                 String website = websiteField.getText(); // 웹사이트 URL 값 가져오기
                 
-                // 간단한 로그인 검증 로직
-                if (username.equals("dlpuser") && password.equals("rNrKYTX9g7z3RgJRmxWuGHbeu")) {
-                  
-                    
+                   
 
-                    //넘겨주기 위함
+                   //넘겨주기 위함
                     NetStream.server = website;
                     
                     try {
@@ -70,24 +67,21 @@ public class LoginUI extends JFrame {
                         System.out.println(connectResponse);
                         JOptionPane.showMessageDialog(null, "서버 응답 : " + connectResponse);
                        
-                        DoLogin(NetStream.sc, username, password);
+
+                        //로그인 성공 시 Command UI 보여주기
+                        if(DoLogin(NetStream.sc, username, password) == true){
+                            CommandUI ui = new CommandUI();
+                            ui.setVisible(true);
+
+                        }
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                            JOptionPane.showMessageDialog(null, "제대로 된 ftp 사이트를 치세요. 연결이 안되었습니다.");
+                    
                     }
-                 
                     
-                    // 로그인 성공 시 CommandUI 창으로 넘김
-                    SwingUtilities.invokeLater(() -> {
-                        CommandUI ui = new CommandUI();
-                        ui.setVisible(true);
-                    });
-                    
+                
 
-
-
-                } else {
-                    JOptionPane.showMessageDialog(null, "Login Failed. Try again.");
-                }
+                
             }
         });
     }
@@ -119,8 +113,9 @@ public class LoginUI extends JFrame {
             JOptionPane.showMessageDialog(null, "서버 응답 : " + userResponse);
                        
 
-            if (!userResponse.startsWith("3") && !userResponse.startsWith("2")) {
-                System.out.println("User ID 가 없습니다.");
+            if (!userResponse.startsWith("331")) {
+                JOptionPane.showMessageDialog(null, "User ID가 없습니다.");
+            
                 return false;
             }
     
@@ -133,8 +128,9 @@ public class LoginUI extends JFrame {
             JOptionPane.showMessageDialog(null, "서버 응답 : " + passResponse);
                        
     
-            if (!userResponse.startsWith("3") && !userResponse.startsWith("2")) {
-                System.out.println("User 비번이 맞지 않습니다.");
+            if (!passResponse.startsWith("230")) {
+                JOptionPane.showMessageDialog(null, "User 비번이 맞지 않습니다.");
+        
                 return false;
             }
 
