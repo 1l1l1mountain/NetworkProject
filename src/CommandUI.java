@@ -1,8 +1,8 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import javax.swing.*;
+import java.io.IOException;
 
 public class CommandUI extends JFrame {
     private JTextArea outputArea; // 명령어 결과를 표시할 영역
@@ -70,23 +70,22 @@ public class CommandUI extends JFrame {
 
         private void executeLs() {
             outputArea.append("Executing ls command...\n");
-            LsUI lsUI = new LsUI(outputArea); // outputArea를 전달하여 LsUI 인스턴스 생성
+            LsUI lsUI = new LsUI(outputArea);
             try {
-                lsUI.Do(); // Do() 메서드를 호출하여 LIST 명령 실행
+                lsUI.Do();
             } catch (IOException ex) {
                 outputArea.append("오류 발생: " + ex.getMessage() + "\n");
             }
         }
 
         private void executeCd() {
-            // 디렉토리 이동 로직 구현
             String input = JOptionPane.showInputDialog("Change Directory to:");
             if (input != null && !input.isEmpty()) {
                 outputArea.append("Changing directory to: " + input + "\n");
                 try {
                     NetStream.SendCommand("CWD " + input);
                     String response = NetStream.ReceiveResponse();
-                    outputArea.append("서버 응답: " + response + "\n"); // 서버 응답 출력
+                    outputArea.append("서버 응답: " + response + "\n");
                 } catch (IOException ex) {
                     outputArea.append("오류 발생: " + ex.getMessage() + "\n");
                 }
@@ -100,9 +99,8 @@ public class CommandUI extends JFrame {
             if (localFilePath != null && !localFilePath.isEmpty() && remoteFileName != null && !remoteFileName.isEmpty()) {
                 outputArea.append("Uploading file: " + localFilePath + " to " + remoteFileName + "\n");
                 try {
-                    PutUI putUI = new PutUI(); // PutUI 인스턴스 생성
+                    PutUI putUI = new PutUI(outputArea); // outputArea를 전달하여 PutUI 인스턴스 생성
                     putUI.Do(remoteFileName, localFilePath); // Do 메서드 호출
-                    outputArea.append("Upload completed.\n");
                 } catch (IOException ex) {
                     outputArea.append("Upload failed: " + ex.getMessage() + "\n");
                 }
@@ -116,8 +114,8 @@ public class CommandUI extends JFrame {
             if (remoteFileName != null && !remoteFileName.isEmpty() && localFilePath != null && !localFilePath.isEmpty()) {
                 outputArea.append("Downloading file: " + remoteFileName + " to " + localFilePath + "\n");
                 try {
-                    GetUI getUI = new GetUI(); // GetUI 인스턴스 생성
-                    getUI.doDownload(remoteFileName, localFilePath); // doDownload 메서드 호출
+                    GetUI getUI = new GetUI();
+                    getUI.doDownload(remoteFileName, localFilePath);
                     outputArea.append("Download completed.\n");
                 } catch (IOException ex) {
                     outputArea.append("Download failed: " + ex.getMessage() + "\n");
@@ -133,7 +131,7 @@ public class CommandUI extends JFrame {
                 try {
                     NetStream.SendCommand("MKD " + input);
                     String response = NetStream.ReceiveResponse();
-                    outputArea.append("서버 응답: " + response + "\n"); // 서버 응답 출력
+                    outputArea.append("서버 응답: " + response + "\n");
                 } catch (IOException ex) {
                     outputArea.append("오류 발생: " + ex.getMessage() + "\n");
                 }
@@ -147,7 +145,7 @@ public class CommandUI extends JFrame {
                 try {
                     NetStream.SendCommand("RMD " + input);
                     String response = NetStream.ReceiveResponse();
-                    outputArea.append("서버 응답: " + response + "\n"); // 서버 응답 출력
+                    outputArea.append("서버 응답: " + response + "\n");
                 } catch (IOException ex) {
                     outputArea.append("오류 발생: " + ex.getMessage() + "\n");
                 }
@@ -161,7 +159,7 @@ public class CommandUI extends JFrame {
                 try {
                     NetStream.SendCommand("DELE " + input);
                     String response = NetStream.ReceiveResponse();
-                    outputArea.append("서버 응답: " + response + "\n"); // 서버 응답 출력
+                    outputArea.append("서버 응답: " + response + "\n");
                 } catch (IOException ex) {
                     outputArea.append("오류 발생: " + ex.getMessage() + "\n");
                 }

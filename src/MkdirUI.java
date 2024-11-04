@@ -37,7 +37,7 @@ public class MkdirUI extends JFrame {
                 //명령어 보내는 try문
                 try {
                     NetStream.SendCommand("MKD " + dirName);
-                    JOptionPane.showMessageDialog(null, "서버 응답 : " + NetStream.ReceiveResponse());
+                    System.out.println(NetStream.ReceiveResponse());
                     // 디렉토리 생성 후 프레임 닫기
                     dispose(); 
                 } catch (IOException e1) {
