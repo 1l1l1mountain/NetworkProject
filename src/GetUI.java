@@ -5,7 +5,7 @@ import java.net.Socket;
 // FTP 서버에서 파일을 다운로드
 public class GetUI {
 
-    public void doDownload(String remoteFileName, String localFilePath) throws IOException {
+    public void Do(String remoteFileName, String localFilePath) throws IOException {
         // 서버에 PASV 명령을 보내고 데이터 전송을 위한 서버의 IP와 포트 정보 받아옴
         String[] connectionInfo = PASV.DoPassiveMode();
 
